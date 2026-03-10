@@ -11,6 +11,75 @@ import {
   Line,
   Legend,
 } from "recharts";
+import { ChevronDown } from "lucide-react";
+
+// Dropdown data
+const branches = [
+  { id: "all", name: "All Branches" },
+  { id: "head_office", name: "Head Office" },
+  { id: "mumbai", name: "Mumbai" },
+  { id: "pune", name: "Pune" },
+  { id: "nashik", name: "Nashik" },
+  { id: "bangalore", name: "Bangalore" },
+];
+
+const departments = [
+  { id: "all", name: "All Departments" },
+  { id: "production", name: "Production" },
+  { id: "sales", name: "Sales" },
+  { id: "it", name: "IT" },
+  { id: "hr", name: "Human Resources" },
+  { id: "finance", name: "Finance" },
+  { id: "marketing", name: "Marketing" },
+];
+
+// Custom Dropdown Component
+const FilterDropdown = ({ label, options, value, onChange, placeholder }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const selectedOption = options.find(opt => opt.id === value);
+
+  return (
+    <div className="relative">
+      <label className="block text-xs font-medium text-gray-500 mb-1">{label}</label>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between gap-2 min-w-[160px] px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:border-gray-300 hover:shadow-sm transition-all duration-200"
+      >
+        <span className="truncate">{selectedOption?.name || placeholder}</span>
+        <ChevronDown size={16} className={`text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {isOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-10"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute top-full left-0 mt-1 w-full min-w-[160px] bg-white border border-gray-200 rounded-lg shadow-lg z-20 py-1 max-h-60 overflow-auto">
+            {options.map((option) => (
+              <button
+                key={option.id}
+                onClick={() => {
+                  onChange(option.id);
+                  setIsOpen(false);
+                }}
+                className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors ${
+                  value === option.id
+                    ? 'bg-red-50 text-red-600 font-medium'
+                    : 'text-gray-700'
+                }`}
+              >
+                {option.name}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
 const statCards = [
   {
     icon: (
@@ -132,11 +201,16 @@ const renderLegend = () => (
     </span>
   </div>
 );
+// Reminders & Events Data
 const upcomingEvents = [
   {
     type: "birthday",
-    title: "Birthdays",
-    items: ["Rajesh Kumar - Feb 15", "Priya Sharma - Feb 18"],
+    title: "Upcoming Birthdays",
+    items: [
+      { name: "Rajesh Kumar", date: "Feb 15", avatar: "RK" },
+      { name: "Priya Sharma", date: "Feb 18", avatar: "PS" },
+      { name: "Vikram Singh", date: "Feb 22", avatar: "VS" },
+    ],
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M16.6654 17.5003V10.8337C16.6654 10.3916 16.4898 9.96771 16.1772 9.65515C15.8646 9.34259 15.4407 9.16699 14.9987 9.16699H4.9987C4.55667 9.16699 4.13275 9.34259 3.82019 9.65515C3.50763 9.96771 3.33203 10.3916 3.33203 10.8337V17.5003" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
@@ -145,11 +219,7 @@ const upcomingEvents = [
 <path d="M5.83203 6.66699V9.16699" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M10 6.66699V9.16699" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M14.168 6.66699V9.16699" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M5.83203 3.33301H5.84036" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M10 3.33301H10.0083" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M14.168 3.33301H14.1763" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
-
     ),
     bg: "bg-[#EFF6FF]",
     border: "border-blue-100",
@@ -157,7 +227,10 @@ const upcomingEvents = [
   {
     type: "anniversary",
     title: "Work Anniversaries",
-    items: ["Amit Patel - 5 years (Feb 20)"],
+    items: [
+      { name: "Amit Patel", date: "5 years (Feb 20)", avatar: "AP" },
+      { name: "Neha Gupta", date: "3 years (Feb 25)", avatar: "NG" },
+    ],
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M16.6667 6.66699H3.33333C2.8731 6.66699 2.5 7.04009 2.5 7.50033V9.16699C2.5 9.62723 2.8731 10.0003 3.33333 10.0003H16.6667C17.1269 10.0003 17.5 9.62723 17.5 9.16699V7.50033C17.5 7.04009 17.1269 6.66699 16.6667 6.66699Z" stroke="#9810FA" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
@@ -165,26 +238,75 @@ const upcomingEvents = [
 <path d="M15.8346 10V15.8333C15.8346 16.2754 15.659 16.6993 15.3465 17.0118C15.0339 17.3244 14.61 17.5 14.168 17.5H5.83464C5.39261 17.5 4.96868 17.3244 4.65612 17.0118C4.34356 16.6993 4.16797 16.2754 4.16797 15.8333V10" stroke="#9810FA" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M6.2513 6.66703C5.69877 6.66703 5.16886 6.44754 4.77816 6.05684C4.38746 5.66614 4.16797 5.13623 4.16797 4.5837C4.16797 4.03116 4.38746 3.50126 4.77816 3.11056C5.16886 2.71986 5.69877 2.50036 6.2513 2.50036C7.05521 2.48636 7.84299 2.87641 8.51192 3.61966C9.18084 4.36292 9.69987 5.42487 10.0013 6.66703C10.3027 5.42487 10.8218 4.36292 11.4907 3.61966C12.1596 2.87641 12.9474 2.48636 13.7513 2.50036C14.3038 2.50036 14.8337 2.71986 15.2244 3.11056C15.6151 3.50126 15.8346 4.03116 15.8346 4.5837C15.8346 5.13623 15.6151 5.66614 15.2244 6.05684C14.8337 6.44754 14.3038 6.66703 13.7513 6.66703" stroke="#9810FA" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
-
-
     ),
     bg: "bg-[#FAF5FF]",
     border: "border-purple-100",
   },
   {
     type: "contract",
-    title: "Contract Expiry",
-    items: ["3 contracts expiring this month"],
+    title: "Contract Expiry Alerts",
+    items: [
+      { name: "Suresh Rao", date: "Expires in 5 days", avatar: "SR", urgent: true },
+      { name: "Anita Desai", date: "Expires in 12 days", avatar: "AD" },
+      { name: "Kiran Mehta", date: "Expires in 18 days", avatar: "KM" },
+    ],
     icon: (
-     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M10.0013 18.3337C14.6037 18.3337 18.3346 14.6027 18.3346 10.0003C18.3346 5.39795 14.6037 1.66699 10.0013 1.66699C5.39893 1.66699 1.66797 5.39795 1.66797 10.0003C1.66797 14.6027 5.39893 18.3337 10.0013 18.3337Z" stroke="#E7000B" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M10 6.66699V10.0003" stroke="#E7000B" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M10 13.333H10.0083" stroke="#E7000B" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
-
     ),
     bg: "bg-[#FEF2F2]",
     border: "border-red-100",
+  },
+];
+
+// Year Milestone - Employees completing 1 year
+const yearMilestones = [
+  { name: "Rahul Verma", date: "Feb 28, 2026", department: "Production", avatar: "RV" },
+  { name: "Sneha Patil", date: "Mar 5, 2026", department: "Sales", avatar: "SP" },
+  { name: "Amit Joshi", date: "Mar 12, 2026", department: "IT", avatar: "AJ" },
+];
+
+// Critical Alerts - Absent without leave & Late arrivals
+const criticalAlerts = [
+  {
+    type: "absent",
+    title: "Absent Without Leave",
+    employees: [
+      { name: "Deepak Sharma", department: "Production", days: 2, avatar: "DS" },
+      { name: "Meena Iyer", department: "HR", days: 1, avatar: "MI" },
+      { name: "Ravi Kumar", department: "Sales", days: 3, avatar: "RK" },
+    ],
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 1.66699C8.35849 1.66699 6.78767 2.31927 5.62732 3.47962C4.46698 4.63996 3.8147 6.21078 3.8147 7.85232C3.8147 10.5294 5.2847 13.0663 7.16663 14.9982C8.02872 15.8828 9.00377 16.6694 10 17.3527C10.9962 16.6694 11.9713 15.8828 12.8334 14.9982C14.7153 13.0663 16.1853 10.5294 16.1853 7.85232C16.1853 6.21078 15.533 4.63996 14.3727 3.47962C13.2123 2.31927 11.6415 1.66699 10 1.66699Z" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M10 10.0003C11.1046 10.0003 12 9.10489 12 8.00033C12 6.89576 11.1046 6.00033 10 6.00033C8.89543 6.00033 8 6.89576 8 8.00033C8 9.10489 8.89543 10.0003 10 10.0003Z" stroke="#DC2626" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    ),
+    bg: "bg-red-50",
+    border: "border-red-200",
+    badge: "bg-red-500",
+  },
+  {
+    type: "late",
+    title: "Late Arrivals Today",
+    employees: [
+      { name: "Suresh Patil", department: "IT", time: "45 min late", avatar: "SP" },
+      { name: "Kavita Singh", department: "Marketing", time: "30 min late", avatar: "KS" },
+      { name: "Arun Nair", department: "Finance", time: "1 hr late", avatar: "AN" },
+      { name: "Pooja Shah", department: "Production", time: "20 min late", avatar: "PS" },
+    ],
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 1.66699C5.40002 1.66699 1.66669 5.40032 1.66669 10.0003C1.66669 14.6003 5.40002 18.3337 10 18.3337C14.6 18.3337 18.3334 14.6003 18.3334 10.0003C18.3334 5.40032 14.6 1.66699 10 1.66699Z" stroke="#D97706" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M10 5.00033V10.0003L13.3334 11.667" stroke="#D97706" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    ),
+    bg: "bg-amber-50",
+    border: "border-amber-200",
+    badge: "bg-amber-500",
   },
 ];
 const data = [
@@ -265,15 +387,121 @@ text: "text-[#0D542B] font-normal text-[12px]",
   },
 ];
 
+// Urgent Notifications for HR Attention
+const urgentNotifications = [
+  { id: 1, type: "leave", message: "Leave Request: Priya Sharma requested 3 days leave (Feb 15-17) - Pending Approval", priority: "high", time: "2 min ago" },
+  { id: 2, type: "expense", message: "Expense Claim: Amit Patel submitted ₹15,000 travel expense - Requires Review", priority: "medium", time: "15 min ago" },
+  { id: 3, type: "query", message: "Query: Rajesh Kumar (Production) has a PF withdrawal request pending for 5 days", priority: "high", time: "30 min ago" },
+  { id: 4, type: "attendance", message: "Attendance Issue: 3 employees marked absent without leave today - Action Required", priority: "urgent", time: "1 hr ago" },
+  { id: 5, type: "document", message: "Document Pending: Sneha Reddy's ID proof verification pending for onboarding", priority: "medium", time: "2 hrs ago" },
+  { id: 6, type: "grievance", message: "Grievance: Anonymous complaint received regarding shift scheduling - Needs Investigation", priority: "high", time: "3 hrs ago" },
+  { id: 7, type: "training", message: "Training Request: 5 employees requested access to new safety training module", priority: "low", time: "4 hrs ago" },
+  { id: 8, type: "promotion", message: "Promotion Review: Performance evaluation due for 3 eligible candidates this quarter", priority: "medium", time: "5 hrs ago" },
+];
+
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("This Month");
+  const [selectedBranch, setSelectedBranch] = useState("all");
+  const [selectedDepartment, setSelectedDepartment] = useState("all");
+  const [isPaused, setIsPaused] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8 font-sans">
+      {/* Scrolling Marquee Notification Bar */}
+      <div className="relative bg-gradient-to-r from-red-600 via-red-500 to-red-600 rounded-xl mb-6 overflow-hidden shadow-lg">
+        {/* Animated background glow */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer"></div>
+
+        <div className="flex items-center relative">
+          {/* Fixed Alert Icon & Title */}
+          <div className="flex items-center gap-2 px-4 py-3 bg-red-700 flex-shrink-0 relative overflow-hidden">
+            {/* Pulsing ring effect behind icon */}
+            <div className="absolute inset-0 bg-red-500 animate-ping opacity-30 rounded-lg"></div>
+
+            {/* Bell icon with shake animation */}
+            <div className="relative animate-wiggle">
+              <svg className="w-5 h-5 text-white drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              {/* Notification badge */}
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 text-red-700 text-[10px] font-bold rounded-full flex items-center justify-center animate-bounce shadow-lg">
+                {urgentNotifications.length}
+              </span>
+            </div>
+
+            {/* Animated title */}
+            <div className="relative">
+              <span className="text-white font-bold text-sm whitespace-nowrap animate-glow tracking-wide">HR ALERTS</span>
+              {/* Underline animation */}
+              <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-yellow-400 animate-pulse"></div>
+            </div>
+          </div>
+
+          {/* Scrolling Content */}
+          <div
+            className="flex-1 overflow-hidden py-3"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
+            <div
+              className={`flex gap-12 ${isPaused ? '' : 'animate-marquee'}`}
+              style={{
+                animation: isPaused ? 'none' : 'marquee 40s linear infinite',
+              }}
+            >
+              {[...urgentNotifications, ...urgentNotifications].map((notification, index) => (
+                <div
+                  key={`${notification.id}-${index}`}
+                  className="flex items-center gap-3 px-4 whitespace-nowrap"
+                >
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium shadow-sm ${
+                    notification.priority === 'urgent' ? 'bg-red-200 text-red-800 animate-pulse' :
+                    notification.priority === 'high' ? 'bg-orange-200 text-orange-800' :
+                    notification.priority === 'medium' ? 'bg-yellow-200 text-yellow-800' :
+                    'bg-green-200 text-green-800'
+                  }`}>
+                    {notification.type.charAt(0).toUpperCase() + notification.type.slice(1)}
+                  </span>
+                  <span className="text-white text-sm font-medium drop-shadow">{notification.message}</span>
+                  <span className="text-red-200 text-xs">• {notification.time}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Pause Indicator */}
+          {isPaused && (
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-white text-xs font-medium border border-white/30">
+              <span className="animate-pulse">⏸ Paused</span>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 tracking-tight">HRMS Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-1">Human Resource Management Overview</p>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 tracking-tight">HRMS Dashboard</h1>
+          <p className="text-sm text-gray-500 mt-1">Human Resource Management Overview</p>
+        </div>
+
+        {/* Filter Dropdowns */}
+        <div className="flex items-end gap-3">
+          <FilterDropdown
+            label="Branch"
+            options={branches}
+            value={selectedBranch}
+            onChange={setSelectedBranch}
+            placeholder="Select Branch"
+          />
+          <FilterDropdown
+            label="Department"
+            options={departments}
+            value={selectedDepartment}
+            onChange={setSelectedDepartment}
+            placeholder="Select Department"
+          />
+        </div>
       </div>
 
       {/* Tab Switcher */}
@@ -462,24 +690,149 @@ export default function Dashboard() {
     </div>
       </div>
 
-      {/* Upcoming Events */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-        <h2 className="text-base font-semibold text-gray-800 mb-4">Upcoming Events</h2>
-        <div className="space-y-3">
+      {/* Reminders & Events Section */}
+      <div className="space-y-4">
+        {/* Section Header */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-800">Reminders & Events</h2>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {upcomingEvents.map((event, i) => (
             <div
               key={i}
-              className={`flex items-start gap-4 p-4 rounded-xl border ${event.bg} ${event.border}`}
+              className={`rounded-2xl p-4 border ${event.bg} ${event.border}`}
             >
-              <div className="mt-0.5 shrink-0">{event.icon}</div>
-              <div>
-                <p className="text-sm font-semibold text-gray-800">{event.title}</p>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-1.5 rounded-lg bg-white shadow-sm">
+                  {event.icon}
+                </div>
+                <h3 className="text-sm font-semibold text-gray-800">{event.title}</h3>
+              </div>
+              <div className="space-y-2">
                 {event.items.map((item, j) => (
-                  <p key={j} className="text-xs text-gray-500 mt-0.5">{item}</p>
+                  <div key={j} className="flex items-center gap-3 p-2 bg-white rounded-lg">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white text-xs font-semibold">
+                      {item.avatar}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-800 truncate">{item.name}</p>
+                      <p className="text-xs text-gray-500">{item.date}</p>
+                    </div>
+                    {item.urgent && (
+                      <span className="px-2 py-0.5 bg-red-100 text-red-600 text-xs font-medium rounded-full">
+                        Urgent
+                      </span>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
           ))}
+        </div>
+
+        {/* One Year Milestone Highlighter */}
+        <div className="bg-gradient-to-r from-emerald-50 via-green-50 to-emerald-50 rounded-2xl p-5 border border-emerald-200">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-400 to-green-500 shadow-lg">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L14.5 8.5L21 9.5L16.5 14L17.5 21L12 18L6.5 21L7.5 14L3 9.5L9.5 8.5L12 2Z" fill="white"/>
+                <path d="M12 2L14.5 8.5L21 9.5L16.5 14L17.5 21L12 18L6.5 21L7.5 14L3 9.5L9.5 8.5L12 2Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-base font-semibold text-emerald-800">🎉 One Year Milestone Achievers</h3>
+              <p className="text-xs text-emerald-600">Celebrating employees completing their first year</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {yearMilestones.map((employee, i) => (
+              <div key={i} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-emerald-100 shadow-sm">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center text-white text-sm font-bold shadow-md">
+                  {employee.avatar}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-gray-800">{employee.name}</p>
+                  <p className="text-xs text-gray-500">{employee.department} • {employee.date}</p>
+                </div>
+                <div className="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-full">
+                  1 Year
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Critical Alerts Section */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 1.66699C5.40002 1.66699 1.66669 5.40032 1.66669 10.0003C1.66669 14.6003 5.40002 18.3337 10 18.3337C14.6 18.3337 18.3334 14.6003 18.3334 10.0003C18.3334 5.40032 14.6 1.66699 10 1.66699Z" stroke="#DC2626" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M10 6.66699V10.8337" stroke="#DC2626" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M10 13.3337H10.0083" stroke="#DC2626" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <h2 className="text-base font-semibold text-gray-800">Critical Alerts</h2>
+            </div>
+            <span className="px-3 py-1 bg-red-100 text-red-600 text-xs font-semibold rounded-full">
+              Action Required
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {criticalAlerts.map((alert, i) => (
+              <div
+                key={i}
+                className={`rounded-xl p-4 border ${alert.bg} ${alert.border}`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-white shadow-sm">
+                      {alert.icon}
+                    </div>
+                    <h3 className="text-sm font-semibold text-gray-800">{alert.title}</h3>
+                  </div>
+                  <span className={`px-2 py-0.5 ${alert.badge} text-white text-xs font-medium rounded-full`}>
+                    {alert.employees.length}
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  {alert.employees.map((emp, j) => (
+                    <div key={j} className="flex items-center gap-3 p-2 bg-white rounded-lg">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-white text-xs font-semibold">
+                        {emp.avatar}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-800 truncate">{emp.name}</p>
+                        <p className="text-xs text-gray-500">{emp.department}</p>
+                      </div>
+                      <div className="text-right">
+                        {alert.type === "absent" ? (
+                          <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded">
+                            {emp.days} day{emp.days > 1 ? 's' : ''} absent
+                          </span>
+                        ) : (
+                          <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded">
+                            {emp.time}
+                          </span>
+                        )}
+                      </div>
+                      <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="text-gray-400 hover:text-red-500">
+                          <circle cx="12" cy="12" r="1"/>
+                          <circle cx="19" cy="12" r="1"/>
+                          <circle cx="5" cy="12" r="1"/>
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button className="w-full mt-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-white rounded-lg transition-colors">
+                  View All →
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
