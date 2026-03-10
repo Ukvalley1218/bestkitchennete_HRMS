@@ -20,6 +20,7 @@ import {
   topIncentiveEarners,
 } from "./data/payrollData";
 import { formatCurrency } from "./utils/payrollCalculations";
+import { UserIcon } from "lucide-react";
 
 // ─── Icon Components (defined outside render) ───────────────────────────────────
 const TotalPaidIcon = () => (
@@ -146,6 +147,7 @@ const PayrollDashboard = () => {
             trendColor="green"
           />
           <ProgressCard
+           icon={<UserIcon />}
             title={dashboardKPIs.processingStatus.value}
             subtitle={dashboardKPIs.processingStatus.label}
             progress={dashboardKPIs.processingStatus.progress}

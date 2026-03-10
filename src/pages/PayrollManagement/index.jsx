@@ -1,5 +1,4 @@
-import React, { useMemo } from "react";
-import { useLocation, Link } from "react-router-dom";
+import React, { useState } from "react";
 import PayrollDashboard from "./PayrollDashboard";
 import EmployeeSalary from "./EmployeeSalary";
 import IncentiveCalculator from "./IncentiveCalculator";
@@ -19,138 +18,17 @@ import {
   SettingsIcon,
 } from "./components/Icons";
 
-// ─── Refresh Icon ──────────────────────────────────────────────────────────────
-const RefreshIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="23 4 23 10 17 10" />
-    <polyline points="1 20 1 14 7 14" />
-    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-  </svg>
-);
-
-// ─── Menu Items ────────────────────────────────────────────────────────────────
-const menuItems = [
-  { id: "dashboard", label: "Payroll Dashboard", icon: <PieChartIcon />, path: "/hrms/payroll" },
-  { id: "employee-salary", label: "Employee Salary", icon: <UsersIcon />, path: "/hrms/payroll/salary" },
-  { id: "salary-processing", label: "Salary Processing", icon: <RefreshIcon />, path: "/hrms/payroll/processing" },
-  { id: "incentive", label: "Incentive Calculator", icon: <CalculatorIcon />, path: "/hrms/payroll/incentive" },
-  { id: "payslip", label: "Payslip Generator", icon: <FileTextIcon />, path: "/hrms/payroll/payslip" },
-  { id: "deductions", label: "Deductions Management", icon: <MoneyIcon />, path: "/hrms/payroll/deductions" },
-  { id: "reports", label: "Payroll Reports", icon: <PieChartIcon />, path: "/hrms/payroll/reports" },
-  { id: "settings", label: "Payroll Settings", icon: <SettingsIcon />, path: "/hrms/payroll/settings" },
+// ─── Tab Configuration ──────────────────────────────────────────────────────────
+const tabs = [
+  { id: "dashboard", label: "Payroll Dashboard", icon: <PieChartIcon /> },
+  { id: "employee-salary", label: "Employee Salary", icon: <UsersIcon /> },
+  { id: "salary-processing", label: "Salary Processing", icon: <BuildingIcon /> },
+  { id: "incentive", label: "Incentive Calculator", icon: <CalculatorIcon /> },
+  { id: "payslip", label: "Payslip Generator", icon: <FileTextIcon /> },
+  { id: "deductions", label: "Deductions", icon: <MoneyIcon /> },
+  { id: "reports", label: "Reports", icon: <PieChartIcon /> },
+  { id: "settings", label: "Settings", icon: <SettingsIcon /> },
 ];
-
-// ─── Payroll Management Main Component ──────────────────────────────────────────
-const PayrollManagement = () => {
-  const location = useLocation();
-
-  // Determine active menu based on URL path using useMemo
-  const activeMenu = useMemo(() => {
-    const path = location.pathname;
-    if (path === "/hrms/payroll" || path === "/hrms/payroll/") {
-      return "dashboard";
-    } else if (path.includes("/salary")) {
-      return "employee-salary";
-    } else if (path.includes("/processing")) {
-      return "salary-processing";
-    } else if (path.includes("/incentive")) {
-      return "incentive";
-    } else if (path.includes("/payslip")) {
-      return "payslip";
-    } else if (path.includes("/deductions")) {
-      return "deductions";
-    } else if (path.includes("/reports")) {
-      return "reports";
-    } else if (path.includes("/settings")) {
-      return "settings";
-    }
-    return "dashboard";
-  }, [location.pathname]);
-
-  const renderContent = () => {
-    switch (activeMenu) {
-      case "dashboard":
-        return <PayrollDashboard />;
-      case "employee-salary":
-        return <EmployeeSalary />;
-      case "salary-processing":
-        return <PayrollProcessing />;
-      case "incentive":
-        return <IncentiveCalculator />;
-      case "payslip":
-        return <PayslipGenerator />;
-      case "deductions":
-        return <DeductionsManagement />;
-      case "reports":
-        return <PayrollReports />;
-      case "settings":
-        return <PayrollSettings />;
-      default:
-        return <PayrollDashboard />;
-    }
-  };
-
-  return (
-    <div className="bg-gray-50 min-h-screen flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex-shrink-0 hidden lg:block">
-        <div className="p-4 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-red-600">Payroll Module</h2>
-          <p className="text-xs text-gray-500">Manage salaries & incentives</p>
-        </div>
-        <nav className="p-3">
-          <ul className="space-y-1">
-            {menuItems.map((item) => (
-              <li key={item.id}>
-                <Link
-                  to={item.path}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                    activeMenu === item.id
-                      ? "bg-red-600 text-white shadow-lg"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                  }`}
-                >
-                  <span className={activeMenu === item.id ? "text-white" : "text-gray-400"}>
-                    {item.icon}
-                  </span>
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        {/* Mobile Menu */}
-        <div className="lg:hidden bg-white border-b border-gray-200 p-4 overflow-x-auto">
-          <div className="flex gap-2 min-w-max">
-            {menuItems.map((item) => (
-              <Link
-                key={item.id}
-                to={item.path}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
-                  activeMenu === item.id
-                    ? "bg-red-600 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                {item.icon}
-                <span className="hidden sm:inline">{item.label}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Content Area */}
-        <div className="p-0">
-          {renderContent()}
-        </div>
-      </main>
-    </div>
-  );
-};
 
 // ─── Deductions Management Component ────────────────────────────────────────────
 const DeductionsManagement = () => {
@@ -278,7 +156,7 @@ const PayrollReports = () => {
 
 // ─── Payroll Settings Component ──────────────────────────────────────────────────
 const PayrollSettings = () => {
-  const [settings, setSettings] = React.useState({
+  const [settings, setSettings] = useState({
     pfPercentage: 12,
     esicPercentage: 0.75,
     professionalTax: 200,
@@ -407,6 +285,68 @@ const PayrollSettings = () => {
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Payroll Management Main Component ──────────────────────────────────────────
+const PayrollManagement = () => {
+  const [activeTab, setActiveTab] = useState("dashboard");
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "dashboard":
+        return <PayrollDashboard />;
+      case "employee-salary":
+        return <EmployeeSalary />;
+      case "salary-processing":
+        return <PayrollProcessing />;
+      case "incentive":
+        return <IncentiveCalculator />;
+      case "payslip":
+        return <PayslipGenerator />;
+      case "deductions":
+        return <DeductionsManagement />;
+      case "reports":
+        return <PayrollReports />;
+      case "settings":
+        return <PayrollSettings />;
+      default:
+        return <PayrollDashboard />;
+    }
+  };
+
+  return (
+    <div className="bg-gray-50 min-h-screen">
+      {/* Horizontal Tabs */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="px-6">
+          <nav className="flex gap-1 overflow-x-auto scrollbar-hide" aria-label="Tabs">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`
+                  flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap
+                  border-b-2 transition-colors duration-200
+                  ${activeTab === tab.id
+                    ? "border-red-600 text-red-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }
+                `}
+              >
+                <span className="w-4 h-4">{tab.icon}</span>
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      <div className="flex-1">
+        {renderContent()}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LeaveStatCard from "../components/StatCard";
 
 // ───────────────── ICONS ─────────────────
@@ -67,66 +67,74 @@ const InactiveJobsIcon = () => (
   </svg>
 );
 
-// ───────────────── DATA ─────────────────
-
-const EVENTS = {
-  "2026-02-10": [
-    { time: "10:00 AM", color: "bg-green-500" },
-    { time: "3:00 PM", color: "bg-purple-500" },
-  ],
-  "2026-02-12": [{ time: "2:00 PM", color: "bg-purple-500" }],
-  "2026-02-17": [{ time: "11:00 AM", color: "bg-orange-500" }],
-};
-
-// const DAYS   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-// const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
-// function getDaysInMonth(y, m) { return new Date(y, m + 1, 0).getDate(); }
-function getFirstDay(y, m) {
-  return new Date(y, m, 1).getDay();
-}
-const MEETINGS = [
-  {
-    title: "Interview for Interior Designer Position",
-    date: "Feb 15, 2026",
-    tag: "Interview",
-    tagColor: "bg-purple-100 text-purple-600",
-  },
-  {
-    title: "Internal Review",
-    date: "Feb 20, 2026",
-    tag: "External",
-    tagColor: "bg-blue-100 text-blue-600",
-  },
-  {
-    title: "New Product line training for sales team",
-    date: "Feb 25, 2026",
-    tag: "Internal",
-    tagColor: "bg-orange-100 text-orange-500",
-  },
-  {
-    title: "Client Meeting",
-    date: "Feb 25, 2026",
-    tag: "Internal",
-    tagColor: "bg-green-100 text-green-600",
-  },
-];
+// ───────────────── CONSTANTS ─────────────────
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+const EVENT_TYPES = [
+  { value: "Training", color: "bg-green-500", textColor: "text-green-600", bgLight: "bg-green-100" },
+  { value: "Meeting", color: "bg-blue-500", textColor: "text-blue-600", bgLight: "bg-blue-100" },
+  { value: "Interview", color: "bg-purple-500", textColor: "text-purple-600", bgLight: "bg-purple-100" },
+  { value: "Payroll", color: "bg-orange-500", textColor: "text-orange-600", bgLight: "bg-orange-100" },
+  { value: "Other", color: "bg-gray-500", textColor: "text-gray-600", bgLight: "bg-gray-100" },
+];
+
+// ───────────────── INITIAL MOCK EVENTS ─────────────────
+
+const INITIAL_EVENTS = [
+  {
+    id: 1,
+    title: "React Training",
+    type: "Training",
+    date: "2026-03-10",
+    time: "10:00 AM",
+    description: "Advanced React concepts including hooks and context API.",
+  },
+  {
+    id: 2,
+    title: "HR Meeting",
+    type: "Meeting",
+    date: "2026-03-12",
+    time: "11:00 AM",
+    description: "Quarterly HR review meeting with department heads.",
+  },
+  {
+    id: 3,
+    title: "Payroll Processing",
+    type: "Payroll",
+    date: "2026-03-18",
+    time: "02:00 PM",
+    description: "Monthly payroll processing and verification.",
+  },
+  {
+    id: 4,
+    title: "Interview Schedule",
+    type: "Interview",
+    date: "2026-03-18",
+    time: "04:30 PM",
+    description: "Technical interview for Senior Developer position.",
+  },
+  {
+    id: 5,
+    title: "Team Training",
+    type: "Training",
+    date: "2026-03-22",
+    time: "09:00 AM",
+    description: "New team member onboarding and training session.",
+  },
+  {
+    id: 6,
+    title: "Performance Review",
+    type: "Meeting",
+    date: "2026-03-25",
+    time: "03:00 PM",
+    description: "Annual performance review meeting with team leads.",
+  },
 ];
 
 // ───────────────── HELPERS ─────────────────
@@ -139,48 +147,350 @@ function getFirstDayOfMonth(year, month) {
   return new Date(year, month, 1).getDay();
 }
 
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+function getEventTypeConfig(type) {
+  return EVENT_TYPES.find((t) => t.value === type) || EVENT_TYPES[4];
+}
+
+// ───────────────── ADD/EDIT EVENT MODAL ─────────────────
+
+function EventModal({ isOpen, onClose, onSave, selectedDate, editingEvent, onUpdate }) {
+  const [formData, setFormData] = useState({
+    title: "",
+    type: "Training",
+    date: selectedDate || "",
+    time: "09:00 AM",
+    description: "",
+  });
+
+  const isEditMode = !!editingEvent;
+
+  // Populate form when editing
+  useEffect(() => {
+    if (editingEvent) {
+      setFormData({
+        title: editingEvent.title,
+        type: editingEvent.type,
+        date: editingEvent.date,
+        time: editingEvent.time,
+        description: editingEvent.description || "",
+      });
+    } else {
+      setFormData({
+        title: "",
+        type: "Training",
+        date: selectedDate || "",
+        time: "09:00 AM",
+        description: "",
+      });
+    }
+  }, [editingEvent, selectedDate, isOpen]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.title || !formData.date) return;
+
+    if (isEditMode) {
+      onUpdate({
+        ...editingEvent,
+        ...formData,
+      });
+    } else {
+      onSave({
+        id: Date.now(),
+        ...formData,
+      });
+    }
+
+    setFormData({
+      title: "",
+      type: "Training",
+      date: selectedDate || "",
+      time: "09:00 AM",
+      description: "",
+    });
+
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Overlay */}
+      <div
+        className="absolute inset-0 bg-black/50"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6 z-10">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-gray-900">
+            {isEditMode ? "Edit Event" : "Add New Event"}
+          </h2>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500"
+          >
+            ✕
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Event Title */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Event Title *
+            </label>
+            <input
+              type="text"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="Enter event title"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+              required
+            />
+          </div>
+
+          {/* Event Type */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Event Type
+            </label>
+            <select
+              value={formData.type}
+              onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 bg-white"
+            >
+              {EVENT_TYPES.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.value}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Date & Time */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date *
+              </label>
+              <input
+                type="date"
+                value={formData.date}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Time
+              </label>
+              <input
+                type="text"
+                value={formData.time}
+                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                placeholder="e.g., 10:00 AM"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+              />
+            </div>
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Enter event description"
+              rows={3}
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
+            />
+          </div>
+
+          {/* Buttons */}
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700"
+            >
+              {isEditMode ? "Update Event" : "Add Event"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ───────────────── EVENT DETAIL PANEL ─────────────────
+
+function EventDetailPanel({ selectedDate, events, onClose, onDelete, onEdit }) {
+  if (!selectedDate) return null;
+
+  const typeConfig = (type) => getEventTypeConfig(type);
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <div className="w-1 h-6 bg-red-500 rounded-full" />
+          <h3 className="text-base font-bold text-gray-900">
+            {formatDate(selectedDate)}
+          </h3>
+        </div>
+        <button
+          onClick={onClose}
+          className="text-gray-400 hover:text-gray-600 text-sm"
+        >
+          Clear
+        </button>
+      </div>
+
+      {/* Events List */}
+      {events.length === 0 ? (
+        <div className="text-center py-8">
+          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+            <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <p className="text-sm text-gray-500">No events scheduled</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {events.map((event) => {
+            const config = typeConfig(event.type);
+            return (
+              <div
+                key={event.id}
+                className={`p-4 rounded-xl ${config.bgLight} border border-gray-100`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${config.textColor} ${config.bgLight}`}>
+                        {event.type}
+                      </span>
+                      <span className="text-xs text-gray-500">{event.time}</span>
+                    </div>
+                    <h4 className="text-sm font-semibold text-gray-900">{event.title}</h4>
+                    {event.description && (
+                      <p className="text-xs text-gray-500 mt-1">{event.description}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => onEdit(event)}
+                      className="text-gray-400 hover:text-blue-500 p-1"
+                      title="Edit event"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => onDelete(event.id)}
+                      className="text-gray-400 hover:text-red-500 p-1"
+                      title="Delete event"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Event Count */}
+      {events.length > 0 && (
+        <div className="mt-4 pt-3 border-t border-gray-100">
+          <p className="text-xs text-gray-500 text-center">
+            {events.length} event{events.length !== 1 ? "s" : ""} scheduled
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ───────────────── MAIN COMPONENT ─────────────────
 
 export default function CalenderTraining() {
   const today = new Date();
 
+  // State
   const [view, setView] = useState("Month");
-
   const [current, setCurrent] = useState({
     year: today.getFullYear(),
     month: today.getMonth(),
   });
+  const [events, setEvents] = useState(INITIAL_EVENTS);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
 
   const { year, month } = current;
-
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
 
+  // Navigation
   const prev = () => {
     setCurrent(({ year, month }) =>
-      month === 0 ? { year: year - 1, month: 11 } : { year, month: month - 1 },
+      month === 0 ? { year: year - 1, month: 11 } : { year, month: month - 1 }
     );
   };
 
   const next = () => {
     setCurrent(({ year, month }) =>
-      month === 11 ? { year: year + 1, month: 0 } : { year, month: month + 1 },
+      month === 11 ? { year: year + 1, month: 0 } : { year, month: month + 1 }
     );
   };
 
-  const goToday = () =>
+  const goToday = () => {
     setCurrent({
       year: today.getFullYear(),
       month: today.getMonth(),
     });
+    setSelectedDate(
+      `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`
+    );
+  };
 
+  // Calendar cells
   const cells = [
     ...Array(firstDay).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
-
   while (cells.length % 7 !== 0) cells.push(null);
 
+  // Helpers
   const isToday = (day) =>
     day === today.getDate() &&
     month === today.getMonth() &&
@@ -189,13 +499,65 @@ export default function CalenderTraining() {
   const dateKey = (day) =>
     `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
+  const getEventsForDate = (date) =>
+    events.filter((e) => e.date === date);
+
+  const handleDateClick = (day) => {
+    if (day) {
+      setSelectedDate(dateKey(day));
+    }
+  };
+
+  const handleAddEvent = (newEvent) => {
+    setEvents((prev) => [...prev, newEvent]);
+  };
+
+  const handleDeleteEvent = (eventId) => {
+    setEvents((prev) => prev.filter((e) => e.id !== eventId));
+  };
+
+  const handleEditEvent = (event) => {
+    setEditingEvent(event);
+    setIsModalOpen(true);
+  };
+
+  const handleUpdateEvent = (updatedEvent) => {
+    setEvents((prev) =>
+      prev.map((e) => (e.id === updatedEvent.id ? updatedEvent : e))
+    );
+    setEditingEvent(null);
+  };
+
+  const handleOpenModal = () => {
+    setEditingEvent(null);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingEvent(null);
+  };
+
+  const selectedDateEvents = selectedDate ? getEventsForDate(selectedDate) : [];
+
   return (
     <div className="p-6 flex justify-center">
       <div className="w-full max-w-7xl space-y-6">
         {/* HEADER */}
-        <div>
-          <h1 className="text-2xl font-bold">Calendar & Training Program</h1>
-          <p className="text-[#757575]">KPI tracking and employee appraisals</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Calendar & Training Program</h1>
+            <p className="text-[#757575]">Event management and training schedule</p>
+          </div>
+          <button
+            onClick={handleOpenModal}
+            className="flex items-center gap-2 px-5 py-2.5 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Event
+          </button>
         </div>
 
         {/* STAT CARDS */}
@@ -207,21 +569,18 @@ export default function CalenderTraining() {
             label="Active Program"
             sub="This Month"
           />
-
           <LeaveStatCard
             icon={EnrolledIcon}
             trend="+5"
             value="05"
             label="Enrolled Employees"
           />
-
           <LeaveStatCard
             icon={ActiveJobsIcon}
             trend="+5"
             value="06"
             label="Active Jobs"
           />
-
           <LeaveStatCard
             icon={InactiveJobsIcon}
             trend="+5"
@@ -230,16 +589,16 @@ export default function CalenderTraining() {
           />
         </div>
 
-        {/* CALENDAR + MEETINGS */}
+        {/* CALENDAR + EVENT DETAIL */}
         <div className="flex gap-6 flex-col lg:flex-row">
           {/* CALENDAR */}
-          <div className="flex items-start justify-center p-2">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 w-full max-w-[800px]">
-              {/* ── Row 1: Title left | View toggle right ── */}
+          <div className="flex-1">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+              {/* Header Row */}
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-base font-bold text-gray-900">Event</h2>
-
-                {/* Day / Week / Month toggle */}
+                <h2 className="text-base font-bold text-gray-900">
+                  {MONTHS[month]} {year}
+                </h2>
                 <div className="flex rounded-lg border border-gray-200 overflow-hidden text-sm font-medium">
                   {["Day", "Week", "Month"].map((v) => (
                     <button
@@ -257,7 +616,7 @@ export default function CalenderTraining() {
                 </div>
               </div>
 
-              {/* ── Row 2: Prev/Next + Today ── */}
+              {/* Navigation */}
               <div className="flex items-center gap-2 mb-5">
                 <button
                   onClick={prev}
@@ -277,9 +636,15 @@ export default function CalenderTraining() {
                 >
                   Today
                 </button>
+                <div className="ml-auto flex items-center gap-2 text-xs text-gray-500">
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                    Events
+                  </span>
+                </div>
               </div>
 
-              {/* ── Day headers ── */}
+              {/* Day Headers */}
               <div className="grid grid-cols-7 mb-1">
                 {DAYS.map((d) => (
                   <div
@@ -291,43 +656,63 @@ export default function CalenderTraining() {
                 ))}
               </div>
 
-              {/* ── Date grid ── */}
+              {/* Date Grid */}
               <div className="grid grid-cols-7 gap-1">
                 {cells.map((day, i) => {
                   const key = day ? dateKey(day) : null;
-                  const events = key ? (EVENTS[key] ?? []) : [];
-                  const today_ = day && isToday(day);
+                  const dayEvents = key ? getEventsForDate(key) : [];
+                  const isTodayDate = day && isToday(day);
+                  const isSelected = key && selectedDate === key;
 
                   return (
                     <div
                       key={i}
-                      className={`rounded-xl min-h-[102px] p-3.5 border ${
-                        today_
+                      onClick={() => handleDateClick(day)}
+                      className={`rounded-xl min-h-[102px] p-2 border transition-all cursor-pointer ${
+                        isTodayDate
                           ? "border-cyan-300 bg-cyan-50"
-                          : "border-gray-100"
-                      } ${day ? "hover:bg-gray-50 cursor-pointer" : ""} transition-colors`}
+                          : isSelected
+                          ? "border-red-400 bg-red-50"
+                          : "border-gray-100 hover:bg-gray-50"
+                      }`}
                     >
                       {day && (
                         <>
-                          {/* Day number */}
-                          <span
-                            className={`text-[11px] font-semibold w-5 h-5 flex items-center justify-center rounded-full mb-1 ${
-                              today_ ? "bg-red-500 text-white" : "text-gray-700"
-                            }`}
-                          >
-                            {day}
-                          </span>
+                          {/* Day Number */}
+                          <div className="flex items-center justify-between mb-1">
+                            <span
+                              className={`text-[11px] font-semibold w-5 h-5 flex items-center justify-center rounded-full ${
+                                isTodayDate ? "bg-red-500 text-white" : "text-gray-700"
+                              }`}
+                            >
+                              {day}
+                            </span>
+                            {dayEvents.length > 0 && (
+                              <span className="w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                                {dayEvents.length}
+                              </span>
+                            )}
+                          </div>
 
-                          {/* Events */}
-                          <div className="space-y-0.5">
-                            {events.map((ev, j) => (
-                              <div
-                                key={j}
-                                className={`${ev.color} text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-md truncate`}
-                              >
-                                • {ev.time}
+                          {/* Event Indicators */}
+                          <div className="space-y-1">
+                            {dayEvents.slice(0, 2).map((ev, j) => {
+                              const config = getEventTypeConfig(ev.type);
+                              return (
+                                <div
+                                  key={j}
+                                  className={`${config.color} text-white text-[9px] font-medium px-1.5 py-0.5 rounded truncate`}
+                                  title={`${ev.title} - ${ev.time}`}
+                                >
+                                  {ev.title}
+                                </div>
+                              );
+                            })}
+                            {dayEvents.length > 2 && (
+                              <div className="text-[9px] text-gray-500 pl-1">
+                                +{dayEvents.length - 2} more
                               </div>
-                            ))}
+                            )}
                           </div>
                         </>
                       )}
@@ -338,45 +723,41 @@ export default function CalenderTraining() {
             </div>
           </div>
 
-          {/* MEETINGS */}
-          <div className=" flex items-start justify-center p-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 w-full max-w-xs sm:max-w-sm">
-              {/* ── Header with red left border accent ── */}
-              <div className="flex items-center gap-2 mb-5">
-                <div className="w-1 h-6 bg-red-500 rounded-full shrink-0" />
-                <h2 className="text-base font-bold text-gray-900">
-                  Meeting Schedule
-                </h2>
-              </div>
+          {/* EVENT DETAIL PANEL */}
+          <div className="lg:w-80">
+            <EventDetailPanel
+              selectedDate={selectedDate}
+              events={selectedDateEvents}
+              onClose={() => setSelectedDate(null)}
+              onDelete={handleDeleteEvent}
+              onEdit={handleEditEvent}
+            />
+          </div>
+        </div>
 
-              {/* ── Meeting list ── */}
-              <div className="space-y-0">
-                {MEETINGS.map((m, i) => (
-                  <div
-                    key={i}
-                    className="flex items-start justify-between gap-3 py-3.5 border-b border-gray-100 last:border-b-0"
-                  >
-                    {/* Left: title + date */}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-800 leading-snug">
-                        {m.title}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-1">{m.date}</p>
-                    </div>
-
-                    {/* Right: tag badge */}
-                    <span
-                      className={`shrink-0 text-[10px] font-semibold px-2.5 py-1 rounded-md mt-0.5 ${m.tagColor}`}
-                    >
-                      {m.tag}
-                    </span>
-                  </div>
-                ))}
+        {/* EVENT TYPE LEGEND */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+          <h3 className="text-sm font-semibold text-gray-700 mb-3">Event Types</h3>
+          <div className="flex flex-wrap gap-4">
+            {EVENT_TYPES.map((type) => (
+              <div key={type.value} className="flex items-center gap-2">
+                <span className={`w-3 h-3 rounded-full ${type.color}`}></span>
+                <span className="text-xs text-gray-600">{type.value}</span>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
+
+      {/* ADD/EDIT EVENT MODAL */}
+      <EventModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleAddEvent}
+        onUpdate={handleUpdateEvent}
+        selectedDate={selectedDate}
+        editingEvent={editingEvent}
+      />
     </div>
   );
 }
