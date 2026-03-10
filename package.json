@@ -32,5 +32,8 @@
   },
   "overrides": {
     "vite": "^6.2.0"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.59.0"
   }
 }
