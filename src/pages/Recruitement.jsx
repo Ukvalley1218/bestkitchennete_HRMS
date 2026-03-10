@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 const TrendUpIcon = () => (
@@ -509,7 +509,7 @@ const StageBadge = ({ stage }) => {
 };
 
 // ─── Candidates List Page Component ───────────────────────────────────────────
-const CandidatesListPage = ({ onViewProfile }) => {
+const CandidatesListPage = ({ onViewProfile, onAddCandidate, onEditCandidate, onDeleteCandidate }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStage, setSelectedStage] = useState("All Stages");
   const [showStageDropdown, setShowStageDropdown] = useState(false);
@@ -535,7 +535,10 @@ const CandidatesListPage = ({ onViewProfile }) => {
             <DownloadIcon />
             Export
           </button>
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-all duration-200 hover:shadow-md">
+          <button
+            onClick={onAddCandidate}
+            className="flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-all duration-200 hover:shadow-md"
+          >
             <PlusIcon />
             Add Candidate
           </button>
@@ -661,16 +664,25 @@ const CandidatesListPage = ({ onViewProfile }) => {
                       <button
                         onClick={() => onViewProfile(candidate)}
                         className="p-2 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-all duration-200"
+                        title="View"
                       >
                         <EyeIcon />
                       </button>
-                      <button className="p-2 rounded-lg hover:bg-amber-50 text-gray-400 hover:text-amber-600 transition-all duration-200">
+                      <button
+                        onClick={() => onEditCandidate && onEditCandidate(candidate)}
+                        className="p-2 rounded-lg hover:bg-amber-50 text-gray-400 hover:text-amber-600 transition-all duration-200"
+                        title="Edit"
+                      >
                         <EditIcon />
                       </button>
-                      <button className="p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-all duration-200">
+                      <button
+                        onClick={() => onDeleteCandidate && onDeleteCandidate(candidate)}
+                        className="p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-all duration-200"
+                        title="Delete"
+                      >
                         <TrashIcon />
                       </button>
-                      <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all duration-200">
+                      <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all duration-200" title="More">
                         <MoreVerticalIcon />
                       </button>
                     </div>
@@ -710,7 +722,7 @@ const CandidatesListPage = ({ onViewProfile }) => {
 };
 
 // ─── Kanban Card Component ───────────────────────────────────────────────────
-const KanbanCard = ({ card, columnColor, onViewProfile, onDragStart, onDragEnd, isDragging }) => {
+const KanbanCard = ({ card, columnColor, onViewProfile, onDragStart, onDragEnd, isDragging, onEdit, onDelete }) => {
   return (
     <div
       className={`bg-white rounded-xl border border-gray-100 p-4 cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-gray-200 group relative overflow-hidden ${
@@ -733,13 +745,22 @@ const KanbanCard = ({ card, columnColor, onViewProfile, onDragStart, onDragEnd, 
         style={{ background: `linear-gradient(90deg, ${columnColor} 0%, ${columnColor}80 100%)` }}
       />
 
-      {/* Drag indicator */}
-      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <div className="flex flex-col gap-0.5">
-          <div className="w-4 h-0.5 bg-gray-300 rounded-full"></div>
-          <div className="w-4 h-0.5 bg-gray-300 rounded-full"></div>
-          <div className="w-4 h-0.5 bg-gray-300 rounded-full"></div>
-        </div>
+      {/* Action buttons - Edit & Delete */}
+      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
+        <button
+          onClick={(e) => { e.stopPropagation(); onEdit && onEdit(card); }}
+          className="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 shadow-sm"
+          title="Edit"
+        >
+          <EditIcon />
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); onDelete && onDelete(card); }}
+          className="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:text-red-600 hover:border-red-300 hover:bg-red-50 transition-all duration-200 shadow-sm"
+          title="Delete"
+        >
+          <TrashIcon />
+        </button>
       </div>
 
       {/* Card Header */}
@@ -789,27 +810,33 @@ const KanbanCard = ({ card, columnColor, onViewProfile, onDragStart, onDragEnd, 
 };
 
 // ─── Kanban Pipeline Page Component ───────────────────────────────────────────
-const KanbanPipelinePage = ({ onViewProfile, scrollToSection }) => {
+const KanbanPipelinePage = ({ onViewProfile, scrollToSection, scrollContainerRef, activeTab, onAddCandidate, cards: externalCards, onEditCandidate, onDeleteCandidate }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [draggedCardId, setDraggedCardId] = useState(null);
   const [dragOverColumn, setDragOverColumn] = useState(null);
-  const [cards, setCards] = useState(kanbanCards);
+  const [internalCards, setInternalCards] = useState(kanbanCards);
   const [viewMode, setViewMode] = useState("kanban");
-  const scrollContainerRef = useRef(null);
 
-  // Scroll to specific section
+  // Use external cards if provided, otherwise use internal state
+  const cards = externalCards || internalCards;
+  const setCards = externalCards ? () => {} : setInternalCards;
+  const internalScrollRef = useRef(null);
+  const actualScrollRef = scrollContainerRef || internalScrollRef;
+
+  // Scroll to specific section when tab or scrollToSection changes
   useEffect(() => {
-    if (scrollToSection && scrollContainerRef.current) {
-      const columnIndex = kanbanColumns.findIndex(col => col.id === scrollToSection);
+    const targetSection = scrollToSection || (activeTab === 'interviews' ? 'interview_scheduled' : activeTab === 'training' ? 'training_assigned' : null);
+    if (targetSection && actualScrollRef.current) {
+      const columnIndex = kanbanColumns.findIndex(col => col.id === targetSection);
       if (columnIndex !== -1) {
-        const columnWidth = 356; // 340px + 16px gap
-        scrollContainerRef.current.scrollTo({
+        const columnWidth = 340; // column width + gap
+        actualScrollRef.current.scrollTo({
           left: columnIndex * columnWidth - 20,
           behavior: 'smooth'
         });
       }
     }
-  }, [scrollToSection]);
+  }, [scrollToSection, activeTab, actualScrollRef]);
 
   const handleDragStart = (cardId) => {
     setDraggedCardId(cardId);
@@ -930,7 +957,10 @@ const KanbanPipelinePage = ({ onViewProfile, scrollToSection }) => {
               className="pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200 w-64 placeholder:text-gray-400 group-hover:border-gray-300"
             />
           </div>
-          <button className="flex items-center gap-2 px-5 py-2.5 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-95">
+          <button
+            onClick={onAddCandidate}
+            className="flex items-center gap-2 px-5 py-2.5 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-95"
+          >
             <PlusIcon />
             Add Candidate
           </button>
@@ -981,7 +1011,7 @@ const KanbanPipelinePage = ({ onViewProfile, scrollToSection }) => {
         <>
           {/* Kanban Board - Horizontal Scroll */}
           <div
-            ref={scrollContainerRef}
+            ref={actualScrollRef}
             className="flex gap-5 overflow-x-auto pb-4 pt-1 scrollbar-hide"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
@@ -992,12 +1022,21 @@ const KanbanPipelinePage = ({ onViewProfile, scrollToSection }) => {
             `}</style>
             {kanbanColumns.map((column) => {
               const isDragOver = dragOverColumn === column.id;
+              // Determine if this column should be highlighted based on active tab
+              const isActiveSection = (
+                (activeTab === 'interviews' && column.id === 'interview_scheduled') ||
+                (activeTab === 'training' && column.id === 'training_assigned') ||
+                (activeTab === 'kanban' && column.id === 'new')
+              );
               return (
                 <div
                   key={column.id}
+                  id={`kanban-column-${column.id}`}
                   className={`flex-shrink-0 w-[320px] rounded-2xl border-2 transition-all duration-200 ${
                     isDragOver
                       ? 'bg-blue-50/80 border-blue-300 shadow-lg scale-[1.02]'
+                      : isActiveSection
+                      ? 'bg-yellow-50/80 border-yellow-400 shadow-lg ring-2 ring-yellow-300'
                       : 'bg-gray-50/80 border-gray-100 hover:shadow-lg'
                   }`}
                   onDragOver={(e) => handleDragOver(e, column.id)}
@@ -1007,7 +1046,7 @@ const KanbanPipelinePage = ({ onViewProfile, scrollToSection }) => {
                   {/* Column Header */}
                   <div
                     className={`px-4 py-3 rounded-t-2xl border-b transition-all duration-200 ${
-                      isDragOver ? 'border-blue-200' : 'border-gray-100'
+                      isDragOver ? 'border-blue-200' : isActiveSection ? 'border-yellow-200' : 'border-gray-100'
                     }`}
                     style={{ backgroundColor: column.bgColor }}
                   >
@@ -1022,6 +1061,11 @@ const KanbanPipelinePage = ({ onViewProfile, scrollToSection }) => {
                         <h3 className="font-semibold text-gray-800 text-sm truncate" title={column.title}>
                           {column.title}
                         </h3>
+                        {isActiveSection && (
+                          <span className="ml-2 px-2 py-0.5 bg-yellow-400 text-yellow-900 text-[10px] font-bold rounded-full animate-pulse">
+                            ACTIVE
+                          </span>
+                        )}
                       </div>
                       <span
                         className="text-xs font-bold px-2 py-0.5 rounded-full text-white shadow-sm"
@@ -1043,6 +1087,8 @@ const KanbanPipelinePage = ({ onViewProfile, scrollToSection }) => {
                         onDragStart={handleDragStart}
                         onDragEnd={handleDragEnd}
                         isDragging={draggedCardId === card.id}
+                        onEdit={onEditCandidate}
+                        onDelete={onDeleteCandidate}
                       />
                     ))}
 
@@ -1984,6 +2030,683 @@ const TrainingPage = ({ onViewProfile }) => {
   );
 };
 
+// ─── Add/Edit Candidate Modal Component ───────────────────────────────────────────────
+const AddCandidateModal = ({ isOpen, onClose, onAddCandidate, editCandidate, onUpdateCandidate }) => {
+  const isEditMode = !!editCandidate;
+
+  // Compute initial form data based on edit mode
+  const initialData = useMemo(() => {
+    if (editCandidate) {
+      return {
+        name: editCandidate.name || "",
+        email: editCandidate.email || "",
+        phone: editCandidate.phone || "",
+        position: editCandidate.position || "",
+        experience: editCandidate.experience || "",
+        source: editCandidate.source || "LinkedIn",
+        skillsMatch: editCandidate.skillsMatch || 50,
+        appliedDate: editCandidate.appliedDate ? new Date(editCandidate.appliedDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        notes: editCandidate.notes || "",
+        resume: null,
+        expectedSalary: editCandidate.expectedSalary || "",
+        noticePeriod: editCandidate.noticePeriod || "",
+        currentCompany: editCandidate.currentCompany || "",
+        location: editCandidate.location || "",
+        skills: editCandidate.skills || "",
+        education: editCandidate.education || "",
+        linkedinUrl: editCandidate.linkedinUrl || "",
+        stage: editCandidate.stage || "new",
+      };
+    }
+    return {
+      name: "",
+      email: "",
+      phone: "",
+      position: "",
+      experience: "",
+      source: "LinkedIn",
+      skillsMatch: 50,
+      appliedDate: new Date().toISOString().split('T')[0],
+      notes: "",
+      resume: null,
+      expectedSalary: "",
+      noticePeriod: "",
+      currentCompany: "",
+      location: "",
+      skills: "",
+      education: "",
+      linkedinUrl: "",
+      stage: "new",
+    };
+  }, [editCandidate]);
+
+  const [formData, setFormData] = useState(() => initialData);
+
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Available positions
+  const positions = [
+    "UI/UX Designer",
+    "Software Developer",
+    "Sales Executive",
+    "Marketing Executive",
+    "HR Executive",
+    "Accountant",
+    "Production Manager",
+    "Quality Analyst",
+    "Data Analyst",
+    "Content Writer",
+    "Operations Manager",
+    "Customer Support",
+  ];
+
+  // Source options
+  const sources = [
+    "LinkedIn",
+    "Referral",
+    "Job Portal",
+    "Company Website",
+    "Walk-in",
+    "Recruitment Agency",
+    "Campus Drive",
+    "Other",
+  ];
+
+  // Generate initials from name
+  const generateInitials = (name) => {
+    return name
+      .split(" ")
+      .map(word => word[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  // Handle input change
+  const handleChange = (e) => {
+    const { name, value, type, files } = e.target;
+    if (type === "file") {
+      setFormData(prev => ({ ...prev, [name]: files[0] }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  // Validate form
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Full name is required";
+    }
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    } else if (!/^\+?[\d\s-]{10,}$/.test(formData.phone.replace(/\s/g, ''))) {
+      newErrors.phone = "Please enter a valid phone number";
+    }
+    if (!formData.position) {
+      newErrors.position = "Position is required";
+    }
+    if (!formData.experience.trim()) {
+      newErrors.experience = "Experience is required";
+    }
+    if (!formData.appliedDate) {
+      newErrors.appliedDate = "Applied date is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const newCandidate = {
+      id: Date.now(),
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      position: formData.position,
+      experience: formData.experience,
+      source: formData.source,
+      skillsMatch: parseInt(formData.skillsMatch),
+      appliedDate: new Date(formData.appliedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      initials: generateInitials(formData.name),
+      notes: formData.notes,
+      expectedSalary: formData.expectedSalary,
+      noticePeriod: formData.noticePeriod,
+      currentCompany: formData.currentCompany,
+      location: formData.location,
+      skills: formData.skills,
+      education: formData.education,
+      linkedinUrl: formData.linkedinUrl,
+      resume: formData.resume?.name || null,
+    };
+
+    if (isEditMode && onUpdateCandidate) {
+      // Update existing candidate
+      onUpdateCandidate({
+        ...editCandidate,
+        ...newCandidate,
+        id: editCandidate.id, // Keep original ID
+        stage: formData.stage || editCandidate.stage, // Keep the stage
+      });
+    } else {
+      // Add new candidate
+      onAddCandidate(newCandidate);
+    }
+
+    setIsSubmitting(false);
+    onClose();
+  };
+
+  // Handle modal close
+  const handleClose = () => {
+    setErrors({});
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={handleClose}>
+      <div
+        className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Modal Header */}
+        <div className="sticky top-0 bg-white z-10 flex items-center justify-between p-6 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-white shadow-lg">
+              {isEditMode ? <EditIcon /> : <UserPlusIcon />}
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">
+                {isEditMode ? "Edit Candidate" : "Add New Candidate"}
+              </h2>
+              <p className="text-sm text-gray-500">
+                {isEditMode ? "Update candidate information" : "Fill in the candidate details"}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleClose}
+            className="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+
+        {/* Modal Content */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Personal Information Section */}
+          <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+            <h3 className="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <UserIconFilled />
+              Personal Information
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Full Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Full Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Enter full name"
+                  className={`w-full px-4 py-2.5 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200 ${
+                    errors.name ? 'border-red-500' : 'border-gray-200'
+                  }`}
+                />
+                {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Email Address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="candidate@email.com"
+                  className={`w-full px-4 py-2.5 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200 ${
+                    errors.email ? 'border-red-500' : 'border-gray-200'
+                  }`}
+                />
+                {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Phone Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="+91 98765 43210"
+                  className={`w-full px-4 py-2.5 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200 ${
+                    errors.phone ? 'border-red-500' : 'border-gray-200'
+                  }`}
+                />
+                {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
+              </div>
+
+              {/* Location */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  placeholder="City, State"
+                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
+                />
+              </div>
+
+              {/* LinkedIn URL */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  LinkedIn Profile URL
+                </label>
+                <input
+                  type="url"
+                  name="linkedinUrl"
+                  value={formData.linkedinUrl}
+                  onChange={handleChange}
+                  placeholder="https://linkedin.com/in/username"
+                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Professional Information Section */}
+          <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+            <h3 className="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <BriefcaseIcon />
+              Professional Information
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Position Applied For */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Position Applied For <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="position"
+                  value={formData.position}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2.5 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200 ${
+                    errors.position ? 'border-red-500' : 'border-gray-200'
+                  }`}
+                >
+                  <option value="">Select position</option>
+                  {positions.map(pos => (
+                    <option key={pos} value={pos}>{pos}</option>
+                  ))}
+                </select>
+                {errors.position && <p className="text-xs text-red-500 mt-1">{errors.position}</p>}
+              </div>
+
+              {/* Experience */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Total Experience <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="experience"
+                  value={formData.experience}
+                  onChange={handleChange}
+                  placeholder="e.g., 3 years"
+                  className={`w-full px-4 py-2.5 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200 ${
+                    errors.experience ? 'border-red-500' : 'border-gray-200'
+                  }`}
+                />
+                {errors.experience && <p className="text-xs text-red-500 mt-1">{errors.experience}</p>}
+              </div>
+
+              {/* Current Company */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Current Company
+                </label>
+                <input
+                  type="text"
+                  name="currentCompany"
+                  value={formData.currentCompany}
+                  onChange={handleChange}
+                  placeholder="Current employer name"
+                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
+                />
+              </div>
+
+              {/* Education */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Education
+                </label>
+                <input
+                  type="text"
+                  name="education"
+                  value={formData.education}
+                  onChange={handleChange}
+                  placeholder="e.g., B.Tech in Computer Science"
+                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
+                />
+              </div>
+
+              {/* Skills */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Skills
+                </label>
+                <input
+                  type="text"
+                  name="skills"
+                  value={formData.skills}
+                  onChange={handleChange}
+                  placeholder="e.g., JavaScript, React, Node.js, Python"
+                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Application Details Section */}
+          <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+            <h3 className="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <DocumentIcon />
+              Application Details
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Source */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Application Source
+                </label>
+                <select
+                  name="source"
+                  value={formData.source}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
+                >
+                  {sources.map(src => (
+                    <option key={src} value={src}>{src}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Applied Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Applied Date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  name="appliedDate"
+                  value={formData.appliedDate}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2.5 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200 ${
+                    errors.appliedDate ? 'border-red-500' : 'border-gray-200'
+                  }`}
+                />
+                {errors.appliedDate && <p className="text-xs text-red-500 mt-1">{errors.appliedDate}</p>}
+              </div>
+
+              {/* Skills Match */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Skills Match Score: {formData.skillsMatch}%
+                </label>
+                <input
+                  type="range"
+                  name="skillsMatch"
+                  value={formData.skillsMatch}
+                  onChange={handleChange}
+                  min="0"
+                  max="100"
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600"
+                />
+                <div className="flex justify-between text-xs text-gray-400 mt-1">
+                  <span>0%</span>
+                  <span>50%</span>
+                  <span>100%</span>
+                </div>
+              </div>
+
+              {/* Resume Upload */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Resume/CV
+                </label>
+                <div className="relative">
+                  <input
+                    type="file"
+                    name="resume"
+                    onChange={handleChange}
+                    accept=".pdf,.doc,.docx"
+                    className="hidden"
+                    id="resume-upload"
+                  />
+                  <label
+                    htmlFor="resume-upload"
+                    className="w-full px-4 py-2.5 bg-white border border-dashed border-gray-300 rounded-xl text-sm text-gray-500 cursor-pointer hover:border-red-400 hover:bg-red-50/30 transition-all duration-200 flex items-center justify-center gap-2"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M17 8L12 3L7 8M12 3V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    {formData.resume ? formData.resume.name : "Upload Resume (PDF, DOC)"}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Compensation Details Section */}
+          <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+            <h3 className="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <OfferIcon />
+              Compensation Details
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Expected Salary */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Expected Salary
+                </label>
+                <input
+                  type="text"
+                  name="expectedSalary"
+                  value={formData.expectedSalary}
+                  onChange={handleChange}
+                  placeholder="e.g., ₹50,000/month"
+                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
+                />
+              </div>
+
+              {/* Notice Period */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Notice Period
+                </label>
+                <input
+                  type="text"
+                  name="noticePeriod"
+                  value={formData.noticePeriod}
+                  onChange={handleChange}
+                  placeholder="e.g., 30 days"
+                  className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Notes Section */}
+          <div className="bg-gray-50 rounded-xl p-5 border border-gray-100">
+            <h3 className="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <FileTextIcon />
+              Additional Notes
+            </h3>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Notes/Comments
+              </label>
+              <textarea
+                name="notes"
+                value={formData.notes}
+                onChange={handleChange}
+                rows={3}
+                placeholder="Add any notes about the candidate..."
+                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all duration-200 resize-none"
+              />
+            </div>
+          </div>
+
+          {/* Required Fields Note */}
+          <p className="text-xs text-gray-500">
+            <span className="text-red-500">*</span> Required fields
+          </p>
+        </form>
+
+        {/* Modal Footer */}
+        <div className="sticky bottom-0 bg-white border-t border-gray-100 p-6 flex gap-3">
+          <button
+            type="button"
+            onClick={handleClose}
+            className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors duration-200"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl text-sm font-medium hover:from-red-700 hover:to-red-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {isSubmitting ? (
+              <>
+                <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {isEditMode ? "Updating..." : "Adding..."}
+              </>
+            ) : (
+              <>
+                {isEditMode ? <EditIcon /> : <PlusIcon />}
+                {isEditMode ? "Update Candidate" : "Add Candidate"}
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Delete Confirmation Modal Component ─────────────────────────────────────────
+const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, candidate }) => {
+  if (!isOpen || !candidate) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="bg-white rounded-2xl w-full max-w-md shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Modal Header */}
+        <div className="p-6 border-b border-gray-100">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+              <TrashIcon />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">Delete Candidate</h2>
+              <p className="text-sm text-gray-500">This action cannot be undone</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Modal Content */}
+        <div className="p-6">
+          <p className="text-sm text-gray-600">
+            Are you sure you want to delete <span className="font-semibold text-gray-900">{candidate.name}</span>?
+            This will permanently remove the candidate from the system.
+          </p>
+
+          {/* Candidate Info */}
+          <div className="mt-4 p-4 bg-gray-50 rounded-xl">
+            <div className="flex items-center gap-3">
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold"
+                style={{ background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)" }}
+              >
+                {candidate.initials}
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900">{candidate.name}</p>
+                <p className="text-xs text-gray-500">{candidate.position}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Modal Footer */}
+        <div className="p-6 border-t border-gray-100 flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors duration-200"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              onConfirm(candidate);
+              onClose();
+            }}
+            className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-colors duration-200 flex items-center justify-center gap-2"
+          >
+            <TrashIcon />
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── View Profile Modal Component ───────────────────────────────────────────────
 const ViewProfileModal = ({ isOpen, onClose, candidate }) => {
   if (!isOpen || !candidate) return null;
@@ -2160,8 +2883,11 @@ const Recruitment = () => {
   const [activeNav, setActiveNav] = useState("dashboard");
   const [activeTimeFilter, setActiveTimeFilter] = useState("thisMonth");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddCandidateModalOpen, setIsAddCandidateModalOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [scrollToSection, setScrollToSection] = useState(null);
+  const [kanbanCardsData, setKanbanCardsData] = useState(kanbanCards);
+  const kanbanScrollRef = useRef(null);
 
   const handleViewProfile = (candidate) => {
     setSelectedCandidate(candidate);
@@ -2173,14 +2899,108 @@ const Recruitment = () => {
     setSelectedCandidate(null);
   };
 
+  const handleOpenAddCandidate = () => {
+    setIsAddCandidateModalOpen(true);
+  };
+
+  const handleCloseAddCandidate = () => {
+    setIsAddCandidateModalOpen(false);
+    setEditCandidateData(null);
+  };
+
+  const handleAddCandidate = (newCandidate) => {
+    // Add the new candidate to the 'new' column in kanban
+    setKanbanCardsData(prevCards => ({
+      ...prevCards,
+      new: [...prevCards.new, newCandidate]
+    }));
+  };
+
+  // Edit candidate state
+  const [editCandidateData, setEditCandidateData] = useState(null);
+
+  const handleEditCandidate = (candidate) => {
+    setEditCandidateData(candidate);
+    setIsAddCandidateModalOpen(true);
+  };
+
+  const handleUpdateCandidate = (updatedCandidate) => {
+    // Update candidate in kanban cards
+    setKanbanCardsData(prevCards => {
+      const newCards = { ...prevCards };
+      // Find and update the candidate in the appropriate column
+      for (const columnId in newCards) {
+        const cardIndex = newCards[columnId].findIndex(card => card.id === updatedCandidate.id);
+        if (cardIndex !== -1) {
+          newCards[columnId] = [
+            ...newCards[columnId].slice(0, cardIndex),
+            updatedCandidate,
+            ...newCards[columnId].slice(cardIndex + 1)
+          ];
+          break;
+        }
+      }
+      return newCards;
+    });
+    setEditCandidateData(null);
+  };
+
+  // Delete candidate state
+  const [deleteCandidateData, setDeleteCandidateData] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const handleDeleteCandidate = (candidate) => {
+    setDeleteCandidateData(candidate);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = (candidate) => {
+    // Delete candidate from kanban cards
+    setKanbanCardsData(prevCards => {
+      const newCards = { ...prevCards };
+      for (const columnId in newCards) {
+        newCards[columnId] = newCards[columnId].filter(card => card.id !== candidate.id);
+      }
+      return newCards;
+    });
+    setIsDeleteModalOpen(false);
+    setDeleteCandidateData(null);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setDeleteCandidateData(null);
+  };
+
+  // Scroll to specific kanban column
+  const scrollToKanbanColumn = (columnId) => {
+    if (kanbanScrollRef.current) {
+      const columnIndex = kanbanColumns.findIndex(col => col.id === columnId);
+      if (columnIndex !== -1) {
+        const columnWidth = 340; // column width + gap
+        kanbanScrollRef.current.scrollTo({
+          left: columnIndex * columnWidth - 20,
+          behavior: 'smooth'
+        });
+      }
+    }
+  };
+
   const handleNavChange = (tabValue) => {
     setActiveNav(tabValue);
 
-    // Set scroll target based on tab
+    // Scroll to specific kanban section based on tab
     if (tabValue === "interviews") {
       setScrollToSection("interview_scheduled");
+      scrollToKanbanColumn("interview_scheduled");
     } else if (tabValue === "training") {
       setScrollToSection("training_assigned");
+      scrollToKanbanColumn("training_assigned");
+    } else if (tabValue === "kanban") {
+      setScrollToSection(null);
+      scrollToKanbanColumn("new");
+    } else if (tabValue === "candidates") {
+      setScrollToSection(null);
     } else {
       setScrollToSection(null);
     }
@@ -2215,10 +3035,16 @@ const Recruitment = () => {
         </div>
 
         {/* Render content based on active tab */}
-        {activeNav === "candidates" && <CandidatesListPage onViewProfile={handleViewProfile} />}
+        {activeNav === "candidates" && (
+          <CandidatesListPage
+            onViewProfile={handleViewProfile}
+            onAddCandidate={handleOpenAddCandidate}
+            onEditCandidate={handleEditCandidate}
+            onDeleteCandidate={handleDeleteCandidate}
+          />
+        )}
 
-        {activeNav === "kanban" && <KanbanPipelinePage onViewProfile={handleViewProfile} scrollToSection={scrollToSection} />}
-
+        {/* Show Dashboard content */}
         {activeNav === "dashboard" && (
           <>
             {/* Time Filter Tabs - Only for Dashboard */}
@@ -2307,11 +3133,19 @@ const Recruitment = () => {
           </>
         )}
 
-        {/* Interviews Page */}
-        {activeNav === "interviews" && <InterviewsPage onViewProfile={handleViewProfile} />}
-
-        {/* Training Page */}
-        {activeNav === "training" && <TrainingPage onViewProfile={handleViewProfile} />}
+        {/* Unified Kanban View - visible for Kanban, Interviews, and Training tabs */}
+        {(activeNav === "kanban" || activeNav === "interviews" || activeNav === "training") && (
+          <KanbanPipelinePage
+            onViewProfile={handleViewProfile}
+            scrollToSection={scrollToSection}
+            scrollContainerRef={kanbanScrollRef}
+            activeTab={activeNav}
+            onAddCandidate={handleOpenAddCandidate}
+            cards={kanbanCardsData}
+            onEditCandidate={handleEditCandidate}
+            onDeleteCandidate={handleDeleteCandidate}
+          />
+        )}
       </div>
 
       {/* Floating AI Assistant Button */}
@@ -2322,11 +3156,29 @@ const Recruitment = () => {
         <SparkleIcon />
       </button>
 
+      {/* Add Candidate Modal */}
+      <AddCandidateModal
+        key={editCandidateData ? `edit-${editCandidateData.id}` : 'add'}
+        isOpen={isAddCandidateModalOpen}
+        onClose={handleCloseAddCandidate}
+        onAddCandidate={handleAddCandidate}
+        editCandidate={editCandidateData}
+        onUpdateCandidate={handleUpdateCandidate}
+      />
+
       {/* View Profile Modal */}
       <ViewProfileModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         candidate={selectedCandidate}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleConfirmDelete}
+        candidate={deleteCandidateData}
       />
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, Clock, AlertTriangle, ToggleLeft, ToggleRight, Plus, X, Settings, Info } from "lucide-react";
+import { ChevronDown, Clock, AlertTriangle, ToggleLeft, ToggleRight, Plus, X, Settings, Info, Save } from "lucide-react";
 
 const SearchIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -180,13 +180,386 @@ const overtimeSettings = [
   { id: 4, employeeId: "EMP012", name: "Arun Kumar", department: "Production", designation: "Welder", overtimeEnabled: true, rate: "2X", maxHours: 6 },
 ];
 
+// Add Employee Modal Component
+const AddEmployeeModal = ({ isOpen, onClose, onSave }) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    employeeId: "",
+    department: "",
+    designation: "",
+    type: "Full-time",
+    shift: "General",
+    reportingTo: "",
+    status: "Active",
+    // OT Fields
+    overtimeEligible: false,
+    overtimeRate: "1.5X",
+    maxOvertimeHours: 2,
+    // Additional Fields
+    email: "",
+    phone: "",
+    joiningDate: "",
+    basicSalary: "",
+    // Late Mark & Sandwich Leave Settings
+    lateMarkPolicy: true,
+    sandwichPolicy: true,
+  });
+
+  const [errors, setErrors] = useState({});
+
+  const departmentOptions = [
+    "Production", "Sales", "IT", "HR", "Finance", "Marketing", "Quality", "Maintenance"
+  ];
+
+  const shiftOptions = [
+    "General", "Morning", "Evening", "Night", "Sales Shift"
+  ];
+
+  const typeOptions = ["Full-time", "Contract", "Part-time"];
+
+  const overtimeRateOptions = ["1.5X", "2X"];
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newErrors = {};
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.employeeId.trim()) newErrors.employeeId = "Employee ID is required";
+    if (!formData.department) newErrors.department = "Department is required";
+    if (!formData.designation.trim()) newErrors.designation = "Designation is required";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    onSave(formData);
+    setFormData({
+      name: "",
+      employeeId: "",
+      department: "",
+      designation: "",
+      type: "Full-time",
+      shift: "General",
+      reportingTo: "",
+      status: "Active",
+      overtimeEligible: false,
+      overtimeRate: "1.5X",
+      maxOvertimeHours: 2,
+      email: "",
+      phone: "",
+      joiningDate: "",
+      basicSalary: "",
+      lateMarkPolicy: true,
+      sandwichPolicy: true,
+    });
+    setErrors({});
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Add New Employee</h3>
+            <p className="text-sm text-gray-500">Fill in the employee details including OT eligibility</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <X className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="p-5 space-y-5">
+          {/* Basic Information */}
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xs">1</span>
+              Basic Information
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                  placeholder="Enter full name"
+                />
+                {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Employee ID *</label>
+                <input
+                  type="text"
+                  value={formData.employeeId}
+                  onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                  placeholder="e.g., EMP001"
+                />
+                {errors.employeeId && <p className="text-xs text-red-500 mt-1">{errors.employeeId}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                  placeholder="email@company.com"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                  placeholder="+91 XXXXX XXXXX"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Work Details */}
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xs">2</span>
+              Work Details
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Department *</label>
+                <select
+                  value={formData.department}
+                  onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                >
+                  <option value="">Select Department</option>
+                  {departmentOptions.map((dept) => (
+                    <option key={dept} value={dept}>{dept}</option>
+                  ))}
+                </select>
+                {errors.department && <p className="text-xs text-red-500 mt-1">{errors.department}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Designation *</label>
+                <input
+                  type="text"
+                  value={formData.designation}
+                  onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                  placeholder="e.g., Software Engineer"
+                />
+                {errors.designation && <p className="text-xs text-red-500 mt-1">{errors.designation}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Employee Type</label>
+                <select
+                  value={formData.type}
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                >
+                  {typeOptions.map((type) => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Shift</label>
+                <select
+                  value={formData.shift}
+                  onChange={(e) => setFormData({ ...formData, shift: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                >
+                  {shiftOptions.map((shift) => (
+                    <option key={shift} value={shift}>{shift}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Reporting To</label>
+                <input
+                  type="text"
+                  value={formData.reportingTo}
+                  onChange={(e) => setFormData({ ...formData, reportingTo: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                  placeholder="Manager name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Joining Date</label>
+                <input
+                  type="date"
+                  value={formData.joiningDate}
+                  onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Overtime Settings */}
+          <div className="p-4 bg-green-50 rounded-xl border border-green-200">
+            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <ToggleRight className="w-4 h-4 text-green-600" />
+              Overtime (OT) Eligibility
+            </h4>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Enable Overtime</label>
+                  <p className="text-xs text-gray-500">Allow this employee to work overtime</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, overtimeEligible: !formData.overtimeEligible })}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${formData.overtimeEligible ? 'bg-green-500' : 'bg-gray-300'}`}
+                >
+                  <span className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${formData.overtimeEligible ? 'translate-x-6' : ''}`} />
+                </button>
+              </div>
+
+              {formData.overtimeEligible && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-green-200">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">OT Rate</label>
+                    <select
+                      value={formData.overtimeRate}
+                      onChange={(e) => setFormData({ ...formData, overtimeRate: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 bg-white"
+                    >
+                      {overtimeRateOptions.map((rate) => (
+                        <option key={rate} value={rate}>{rate}</option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-gray-400 mt-1">1.5X = Regular + 50%, 2X = Double pay</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Max OT Hours/Day</label>
+                    <input
+                      type="number"
+                      value={formData.maxOvertimeHours}
+                      onChange={(e) => setFormData({ ...formData, maxOvertimeHours: parseInt(e.target.value) || 0 })}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
+                      min="0"
+                      max="8"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Maximum overtime hours per day</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Salary Information */}
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xs">3</span>
+              Salary Information
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Basic Salary (Monthly)</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+                  <input
+                    type="text"
+                    value={formData.basicSalary}
+                    onChange={(e) => setFormData({ ...formData, basicSalary: e.target.value })}
+                    className="w-full pl-8 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                    placeholder="25,000"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 bg-white"
+                >
+                  <option value="Active">Active</option>
+                  <option value="On Leave">On Leave</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Policy Settings */}
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xs">4</span>
+              Policy Settings
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Late Mark Policy</label>
+                  <p className="text-xs text-gray-500">Apply late mark deductions</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, lateMarkPolicy: !formData.lateMarkPolicy })}
+                  className={`relative w-10 h-5 rounded-full transition-colors ${formData.lateMarkPolicy ? 'bg-green-500' : 'bg-gray-300'}`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform ${formData.lateMarkPolicy ? 'translate-x-5' : ''}`} />
+                </button>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Sandwich Leave Policy</label>
+                  <p className="text-xs text-gray-500">Apply sandwich deductions</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, sandwichPolicy: !formData.sandwichPolicy })}
+                  className={`relative w-10 h-5 rounded-full transition-colors ${formData.sandwichPolicy ? 'bg-green-500' : 'bg-gray-300'}`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform ${formData.sandwichPolicy ? 'translate-x-5' : ''}`} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="flex gap-3 pt-3 border-t border-gray-100">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+            >
+              <Save className="w-4 h-4" />
+              Add Employee
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 export default function EmployeeManagement() {
   const [activeTab, setActiveTab] = useState("thisMonth");
   const [search, setSearch] = useState("");
   const [showShiftModal, setShowShiftModal] = useState(false);
   const [showDeductionModal, setShowDeductionModal] = useState(false);
+  const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false);
   const [overtimeSettingsState, setOvertimeSettingsState] = useState(overtimeSettings);
   const [shifts, setShifts] = useState(shiftManagementData);
+  const [employeesList, setEmployeesList] = useState(employees);
 
   const toggleOvertime = (id) => {
     setOvertimeSettingsState(prev =>
@@ -194,6 +567,23 @@ export default function EmployeeManagement() {
         item.id === id ? { ...item, overtimeEnabled: !item.overtimeEnabled } : item
       )
     );
+  };
+
+  const handleAddEmployee = (newEmployee) => {
+    setEmployeesList(prev => [...prev, { ...newEmployee, id: newEmployee.employeeId }]);
+    // Also add to overtime settings if OT eligible
+    if (newEmployee.overtimeEligible) {
+      setOvertimeSettingsState(prev => [...prev, {
+        id: prev.length + 1,
+        employeeId: newEmployee.employeeId,
+        name: newEmployee.name,
+        department: newEmployee.department,
+        designation: newEmployee.designation,
+        overtimeEnabled: true,
+        rate: newEmployee.overtimeRate,
+        maxHours: newEmployee.maxOvertimeHours,
+      }]);
+    }
   };
 
   return (
@@ -210,7 +600,10 @@ export default function EmployeeManagement() {
               <DownloadIcon />
               Export
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-sm">
+            <button
+              onClick={() => setShowAddEmployeeModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-colors shadow-sm"
+            >
               <PlusIcon />
               Add Employee
             </button>
@@ -533,7 +926,7 @@ export default function EmployeeManagement() {
                 </tr>
               </thead>
               <tbody>
-                {employees
+                {employeesList
                   .filter(e =>
                     search === "" ||
                     e.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -568,6 +961,13 @@ export default function EmployeeManagement() {
           <SparkleIcon />
         </button>
       </div>
+
+      {/* Add Employee Modal */}
+      <AddEmployeeModal
+        isOpen={showAddEmployeeModal}
+        onClose={() => setShowAddEmployeeModal(false)}
+        onSave={handleAddEmployee}
+      />
     </div>
     </div>
   );
