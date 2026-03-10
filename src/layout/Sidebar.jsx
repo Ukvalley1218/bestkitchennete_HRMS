@@ -60,23 +60,7 @@ const menuItems = [
       { name: "Performance Management", path: "/hrms/performance" },
       { name: "Calender & Training", path: "/hrms/calender" },
       { name: "Compilance", path: "/hrms/compilance" },
-
-
-    ],
-  },
-  {
-    name: "Payroll",
-    icon: Wallet,
-    path: "/hrms/payroll",
-    submenu: [
-      { name: "Payroll Dashboard", path: "/hrms/payroll" },
-      { name: "Employee Salary", path: "/hrms/payroll/salary" },
-      { name: "Salary Processing", path: "/hrms/payroll/processing" },
-      { name: "Incentive Calculator", path: "/hrms/payroll/incentive" },
-      { name: "Payslip Generator", path: "/hrms/payroll/payslip" },
-      { name: "Deductions", path: "/hrms/payroll/deductions" },
-      { name: "Reports", path: "/hrms/payroll/reports" },
-      { name: "Settings", path: "/hrms/payroll/settings" },
+      { name: "Payroll", path: "/hrms/payroll" },
     ],
   },
     // { name: "Production", icon: PiFactory, path: "/production/dashboard" },

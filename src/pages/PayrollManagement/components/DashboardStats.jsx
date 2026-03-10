@@ -31,32 +31,74 @@ export const DashboardStatsCard = ({ icon, value, label, sublabel, trend, trendC
 };
 
 // ─── Progress Card Component ────────────────────────────────────────────────────
-export const ProgressCard = ({ title, subtitle, progress, status }) => {
+export const ProgressCard = ({
+  icon,
+  title,
+  subtitle,
+  progress,
+   trend, trendColor = "green", 
+  status,
+   bgColor = "#FFE3E3"
+}) => {
+
   const statusColors = {
-    completed: { bg: "bg-green-500", text: "text-green-600" },
-    processing: { bg: "bg-yellow-500", text: "text-yellow-600" },
-    pending: { bg: "bg-gray-300", text: "text-gray-500" },
+    completed: {
+      bg: "bg-green-500",
+      text: "text-green-600",
+      label: "Completed"
+    },
+    processing: {
+      bg: "bg-yellow-500",
+      text: "text-yellow-600",
+      label: "Processing"
+    },
+    pending: {
+      bg: "bg-gray-300",
+      text: "text-gray-500",
+      label: "Pending"
+    }
   };
 
   const color = statusColors[status] || statusColors.pending;
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-all duration-300">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <p className="text-2xl font-bold text-gray-900">{title}</p>
-          <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>
+    <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 group">
+      
+      {/* Top Section */}
+      <div className="flex items-start justify-between mb-4">
+        
+        {/* Icon */}
+        <div
+          className="w-12 h-12 rounded-xl flex items-center justify-center"
+          style={{ backgroundColor: bgColor }}
+        >
+          {icon}
         </div>
-        <div className={`text-right ${color.text}`}>
-          <span className="text-lg font-bold">{progress}%</span>
-        </div>
+
+        {/* Status */}
+         <span className={`flex items-center gap-1 text-xs font-semibold ${
+            trendColor === "green" ? "text-green-600" :
+            trendColor === "red" ? "text-red-600" :
+            trendColor === "yellow" ? "text-yellow-600" : "text-blue-600"
+          }`}>
+            {trendColor === "green" && <TrendUpIcon />}
+            {trend}
+          </span>
       </div>
-      <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+
+      {/* Title */}
+      <p className="text-2xl font-bold text-gray-900 mb-1">{progress}%</p>
+      <p className="text-sm font-semibold text-gray-700">{title}</p>
+      <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>
+
+      {/* Progress Bar */}
+      <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden mt-4">
         <div
           className={`h-full rounded-full transition-all duration-500 ${color.bg}`}
           style={{ width: `${progress}%` }}
         />
       </div>
+
     </div>
   );
 };
