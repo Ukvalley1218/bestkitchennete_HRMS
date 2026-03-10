@@ -5,7 +5,7 @@ import EmployeeManagement from "./pages/Employees";
 import IncentiveRecords from "./pages/Incentives";
 import Recruitment from "./pages/Recruitement";
 import AttendanceShiftManagement from "./pages/Attendance";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import PayrollManagement from "./pages/Payroll";
 import LeaveManagement from "./pages/LeaveManagement";
 import PerformanceManagement from "./pages/PerformanceManagement";
