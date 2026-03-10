@@ -56,15 +56,29 @@ const menuItems = [
       { name: "Incentives", path: "/hrms/incentives" },
       { name: "Recruitment", path: "/hrms/recruitment" },
       { name: "Attendance & Shift Management", path: "/hrms/attendance" },
-      { name: "Payroll Management", path: "/hrms/payroll" },
       { name: "Leave Management", path: "/hrms/leave" },
-            { name: "Performance Management", path: "/hrms/performance" },
-                        { name: "Calender & Training", path: "/hrms/calender" },
-                        { name: "Compilance", path: "/hrms/compilance" },
+      { name: "Performance Management", path: "/hrms/performance" },
+      { name: "Calender & Training", path: "/hrms/calender" },
+      { name: "Compilance", path: "/hrms/compilance" },
 
 
     ],
-
+  },
+  {
+    name: "Payroll",
+    icon: Wallet,
+    path: "/hrms/payroll",
+    submenu: [
+      { name: "Payroll Dashboard", path: "/hrms/payroll" },
+      { name: "Employee Salary", path: "/hrms/payroll/salary" },
+      { name: "Salary Processing", path: "/hrms/payroll/processing" },
+      { name: "Incentive Calculator", path: "/hrms/payroll/incentive" },
+      { name: "Payslip Generator", path: "/hrms/payroll/payslip" },
+      { name: "Deductions", path: "/hrms/payroll/deductions" },
+      { name: "Reports", path: "/hrms/payroll/reports" },
+      { name: "Settings", path: "/hrms/payroll/settings" },
+    ],
+  },
     // { name: "Production", icon: PiFactory, path: "/production/dashboard" },
     // { name: "Operations", icon: PiCheckCircle, path: "/operations/dashboard" },
     // {
@@ -94,7 +108,7 @@ const menuItems = [
     //   { name: "Education", path: "/finance/gst_dashboard" },
     //   { name: "System Tracking", path: "/finance/gst_dashboard" },
     // ],
-  },
+  // },
 ];
 
 const SidebarLayout = ({ children }) => {
