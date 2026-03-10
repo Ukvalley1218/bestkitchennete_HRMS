@@ -191,18 +191,22 @@ const initialLeaveRequests = [
 
 // ─── Status Badge Component ───────────────────────────────────────────────────
 const StatusBadge = ({ status }) => {
-  const statusStyles = {
-    "Pending": "bg-amber-100 text-amber-700 border-amber-200",
-    "HOD Approved": "bg-blue-100 text-blue-700 border-blue-200",
-    "HOD Rejected": "bg-red-100 text-red-700 border-red-200",
-    "HR Approved": "bg-purple-100 text-purple-700 border-purple-200",
-    "HR Rejected": "bg-red-100 text-red-700 border-red-200",
-    "Approved": "bg-green-100 text-green-700 border-green-200",
-    "Rejected": "bg-red-100 text-red-700 border-red-200",
+  const statusConfig = {
+    "Pending": { bg: "bg-amber-100", text: "text-amber-700", border: "border-amber-300", icon: Clock },
+    "HOD Approved": { bg: "bg-blue-100", text: "text-blue-700", border: "border-blue-300", icon: CheckCircle },
+    "HOD Rejected": { bg: "bg-red-100", text: "text-red-700", border: "border-red-300", icon: XCircle },
+    "HR Approved": { bg: "bg-purple-100", text: "text-purple-700", border: "border-purple-300", icon: CheckCircle },
+    "HR Rejected": { bg: "bg-red-100", text: "text-red-700", border: "border-red-300", icon: XCircle },
+    "Approved": { bg: "bg-green-100", text: "text-green-700", border: "border-green-300", icon: CheckCircle },
+    "Rejected": { bg: "bg-red-100", text: "text-red-700", border: "border-red-300", icon: XCircle },
   };
 
+  const config = statusConfig[status] || statusConfig["Pending"];
+  const IconComponent = config.icon;
+
   return (
-    <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${statusStyles[status] || statusStyles["Pending"]}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border ${config.bg} ${config.text} ${config.border} whitespace-nowrap`}>
+      {/* <IconComponent className="w-3 h-3" /> */}
       {status}
     </span>
   );
@@ -591,7 +595,7 @@ const LeaveRequestDetailModal = ({ isOpen, onClose, request, onApprove, onReject
         {/* Content */}
         <div className="p-5 space-y-5">
           {/* Employee Info */}
-          <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+          <div className="flex items-center gap-4 p-2 bg-gray-50 rounded-xl">
             <div className="w-14 h-14 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white text-lg font-bold">
               {request.name.split(" ").map((n) => n[0]).join("")}
             </div>
@@ -1085,15 +1089,15 @@ const LeaveManagement = () => {
             {/* Leave Requests Table */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[1100px]">
+                <table className="w-full min-w-[1200px]">
                   <thead className="bg-gray-50 border-b border-gray-100">
                     <tr>
                       <th className="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap w-[200px]">Employee</th>
-                      <th className="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap w-[120px]">Leave Type</th>
-                      <th className="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap w-[140px]">Duration</th>
+                      <th className="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap w-[130px]">Leave Type</th>
+                      <th className="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap w-[130px]">Duration</th>
                       <th className="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap w-[200px]">Reason</th>
-                      <th className="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap w-[280px]">Workflow</th>
-                      <th className="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap w-[120px]">Status</th>
+                      <th className="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap w-[260px]">Workflow</th>
+                      <th className="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap w-[140px]">Status</th>
                       <th className="px-4 py-4 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap w-[100px]">Actions</th>
                     </tr>
                   </thead>
@@ -1112,9 +1116,16 @@ const LeaveManagement = () => {
                           </div>
                         </td>
                         <td className="px-4 py-4">
-                          <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap ${
-                            request.isSickLeave ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg border whitespace-nowrap ${
+                            request.isSickLeave
+                              ? "bg-red-50 text-red-700 border-red-200"
+                              : request.leaveType === "Earned Leave"
+                              ? "bg-green-50 text-green-700 border-green-200"
+                              : request.leaveType === "Casual Leave"
+                              ? "bg-blue-50 text-blue-700 border-blue-200"
+                              : "bg-gray-50 text-gray-700 border-gray-200"
                           }`}>
+                            {request.isSickLeave && <AlertTriangle className="w-3 h-3" />}
                             {request.leaveType}
                           </span>
                         </td>
@@ -1134,7 +1145,7 @@ const LeaveManagement = () => {
                         <td className="px-4 py-4">
                           <WorkflowProgress request={request} />
                         </td>
-                        <td className="px-4 py-4">
+                        <td className="px-4 py-4 align-middle">
                           <StatusBadge status={request.status} />
                         </td>
                         <td className="px-4 py-4">

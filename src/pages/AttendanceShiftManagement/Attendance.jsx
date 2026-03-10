@@ -11,7 +11,7 @@ import {
   Line,
   Legend,
 } from "recharts";
-import { ChevronDown, Calendar, Clock, Users, UserCheck, UserX, AlertTriangle, TrendingUp, Edit2, Trash2, Plus, Save, X, Settings, Info, ToggleLeft, ToggleRight } from "lucide-react";
+import { ChevronDown, Calendar, Clock, Users, UserCheck, UserX, AlertTriangle, TrendingUp, Edit2, Trash2, Plus, Save, X, Settings, Info, ToggleLeft, ToggleRight, Download } from "lucide-react";
 import TodayAttendanceTable from "../../components/AttendanceTable";
 
 // ─── Filter Dropdown Component ─────────────────────────────────────────────────
@@ -1324,17 +1324,412 @@ const AttendanceShiftManagement = () => {
 
         {/* Reports Tab Content */}
         {activeTab === "reports" && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center">
-            <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Attendance Reports</h3>
-            <p className="text-sm text-gray-500 mb-4">Generate detailed attendance and shift reports</p>
-            <div className="flex flex-wrap justify-center gap-3">
-              <button className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
-                Download Monthly Report
-              </button>
-              <button className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
-                Export to Excel
-              </button>
+          <div className="space-y-5">
+            {/* Report Header */}
+            <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-red-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-800">Attendance Reports</h2>
+                    <p className="text-sm text-gray-500">Generate and download detailed reports</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
+                    <Download className="w-4 h-4" />
+                    Export All
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Report Filters */}
+            <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+              <div className="flex flex-wrap items-end gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Report Type</label>
+                  <select className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500/20">
+                    <option>Attendance Summary</option>
+                    <option>Late Arrival Report</option>
+                    <option>Absenteeism Report</option>
+                    <option>Overtime Report</option>
+                    <option>Shift-wise Report</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Period</label>
+                  <select className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500/20">
+                    <option>This Month</option>
+                    <option>Last Month</option>
+                    <option>Last 3 Months</option>
+                    <option>This Quarter</option>
+                    <option>Custom Range</option>
+                  </select>
+                </div>
+                <FilterDropdown
+                  label="Department"
+                  options={departments}
+                  value={selectedDepartment}
+                  onChange={setSelectedDepartment}
+                  placeholder="Select Department"
+                />
+                <FilterDropdown
+                  label="Branch"
+                  options={branches}
+                  value={selectedBranch}
+                  onChange={setSelectedBranch}
+                  placeholder="Select Branch"
+                />
+                <button className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
+                  Generate Report
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Stats Summary */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="bg-green-50 rounded-xl p-4 border border-green-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <UserCheck className="w-4 h-4 text-green-600" />
+                  <span className="text-xs font-medium text-green-700">Total Present</span>
+                </div>
+                <p className="text-2xl font-bold text-green-800">4,872</p>
+                <p className="text-xs text-green-600">This month</p>
+              </div>
+              <div className="bg-amber-50 rounded-xl p-4 border border-amber-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="w-4 h-4 text-amber-600" />
+                  <span className="text-xs font-medium text-amber-700">Late Arrivals</span>
+                </div>
+                <p className="text-2xl font-bold text-amber-800">187</p>
+                <p className="text-xs text-amber-600">This month</p>
+              </div>
+              <div className="bg-red-50 rounded-xl p-4 border border-red-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <UserX className="w-4 h-4 text-red-600" />
+                  <span className="text-xs font-medium text-red-700">Total Absent</span>
+                </div>
+                <p className="text-2xl font-bold text-red-800">98</p>
+                <p className="text-xs text-red-600">This month</p>
+              </div>
+              <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <Calendar className="w-4 h-4 text-blue-600" />
+                  <span className="text-xs font-medium text-blue-700">Avg Attendance</span>
+                </div>
+                <p className="text-2xl font-bold text-blue-800">94.2%</p>
+                <p className="text-xs text-blue-600">This month</p>
+              </div>
+            </div>
+
+            {/* Attendance Summary Report */}
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 className="text-base font-semibold text-gray-800">Attendance Summary Report - March 2026</h3>
+                <div className="flex items-center gap-2">
+                  <button className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                    <Download className="w-3.5 h-3.5" />
+                    PDF
+                  </button>
+                  <button className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                    <Download className="w-3.5 h-3.5" />
+                    Excel
+                  </button>
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[900px]">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Department</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Total Employees</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Present</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Late</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Absent</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">On Leave</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">OT Hours</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Attendance %</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    <tr className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-3 text-sm font-medium text-gray-800">Production</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 text-center">207</td>
+                      <td className="px-4 py-3 text-sm text-green-600 font-medium text-center">5,890</td>
+                      <td className="px-4 py-3 text-sm text-amber-600 font-medium text-center">89</td>
+                      <td className="px-4 py-3 text-sm text-red-600 font-medium text-center">34</td>
+                      <td className="px-4 py-3 text-sm text-blue-600 font-medium text-center">56</td>
+                      <td className="px-4 py-3 text-sm text-purple-600 font-medium text-center">245 hrs</td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">96.2%</span>
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-3 text-sm font-medium text-gray-800">Sales</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 text-center">45</td>
+                      <td className="px-4 py-3 text-sm text-green-600 font-medium text-center">1,245</td>
+                      <td className="px-4 py-3 text-sm text-amber-600 font-medium text-center">32</td>
+                      <td className="px-4 py-3 text-sm text-red-600 font-medium text-center">18</td>
+                      <td className="px-4 py-3 text-sm text-blue-600 font-medium text-center">12</td>
+                      <td className="px-4 py-3 text-sm text-purple-600 font-medium text-center">0 hrs</td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">94.8%</span>
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-3 text-sm font-medium text-gray-800">IT</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 text-center">28</td>
+                      <td className="px-4 py-3 text-sm text-green-600 font-medium text-center">756</td>
+                      <td className="px-4 py-3 text-sm text-amber-600 font-medium text-center">12</td>
+                      <td className="px-4 py-3 text-sm text-red-600 font-medium text-center">8</td>
+                      <td className="px-4 py-3 text-sm text-blue-600 font-medium text-center">6</td>
+                      <td className="px-4 py-3 text-sm text-purple-600 font-medium text-center">45 hrs</td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">97.1%</span>
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-3 text-sm font-medium text-gray-800">HR</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 text-center">15</td>
+                      <td className="px-4 py-3 text-sm text-green-600 font-medium text-center">402</td>
+                      <td className="px-4 py-3 text-sm text-amber-600 font-medium text-center">5</td>
+                      <td className="px-4 py-3 text-sm text-red-600 font-medium text-center">3</td>
+                      <td className="px-4 py-3 text-sm text-blue-600 font-medium text-center">2</td>
+                      <td className="px-4 py-3 text-sm text-purple-600 font-medium text-center">0 hrs</td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">98.2%</span>
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-3 text-sm font-medium text-gray-800">Finance</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 text-center">18</td>
+                      <td className="px-4 py-3 text-sm text-green-600 font-medium text-center">483</td>
+                      <td className="px-4 py-3 text-sm text-amber-600 font-medium text-center">8</td>
+                      <td className="px-4 py-3 text-sm text-red-600 font-medium text-center">4</td>
+                      <td className="px-4 py-3 text-sm text-blue-600 font-medium text-center">5</td>
+                      <td className="px-4 py-3 text-sm text-purple-600 font-medium text-center">0 hrs</td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">96.5%</span>
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-3 text-sm font-medium text-gray-800">Marketing</td>
+                      <td className="px-4 py-3 text-sm text-gray-600 text-center">22</td>
+                      <td className="px-4 py-3 text-sm text-green-600 font-medium text-center">578</td>
+                      <td className="px-4 py-3 text-sm text-amber-600 font-medium text-center">15</td>
+                      <td className="px-4 py-3 text-sm text-red-600 font-medium text-center">9</td>
+                      <td className="px-4 py-3 text-sm text-blue-600 font-medium text-center">7</td>
+                      <td className="px-4 py-3 text-sm text-purple-600 font-medium text-center">0 hrs</td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">95.3%</span>
+                      </td>
+                    </tr>
+                    <tr className="bg-gray-50 font-semibold">
+                      <td className="px-4 py-3 text-sm text-gray-800">Total</td>
+                      <td className="px-4 py-3 text-sm text-gray-800 text-center">335</td>
+                      <td className="px-4 py-3 text-sm text-green-700 text-center">9,354</td>
+                      <td className="px-4 py-3 text-sm text-amber-700 text-center">161</td>
+                      <td className="px-4 py-3 text-sm text-red-700 text-center">76</td>
+                      <td className="px-4 py-3 text-sm text-blue-700 text-center">88</td>
+                      <td className="px-4 py-3 text-sm text-purple-700 text-center">290 hrs</td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-200 text-green-800">95.8%</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Late Arrival Detailed Report */}
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 className="text-base font-semibold text-gray-800">Late Arrival Report - Top 10</h3>
+                <div className="flex items-center gap-2">
+                  <button className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                    <Download className="w-3.5 h-3.5" />
+                    Export
+                  </button>
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[800px]">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Employee</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Department</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Late Days</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Avg Late (min)</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Deduction</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Trend</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {[
+                      { name: "Suresh Patil", dept: "IT", lateDays: 8, avgLate: 32, deduction: "1.5 days", trend: "up" },
+                      { name: "Kavita Singh", dept: "Marketing", lateDays: 6, avgLate: 25, deduction: "1 day", trend: "down" },
+                      { name: "Arun Nair", dept: "Finance", lateDays: 5, avgLate: 18, deduction: "0.5 day", trend: "stable" },
+                      { name: "Meena Iyer", dept: "Production", lateDays: 5, avgLate: 22, deduction: "0.5 day", trend: "up" },
+                      { name: "Ravi Kumar", dept: "Sales", lateDays: 4, avgLate: 15, deduction: "-", trend: "down" },
+                      { name: "Deepak Sharma", dept: "Production", lateDays: 4, avgLate: 28, deduction: "-", trend: "up" },
+                      { name: "Priya Verma", dept: "IT", lateDays: 3, avgLate: 12, deduction: "-", trend: "stable" },
+                      { name: "Amit Joshi", dept: "HR", lateDays: 3, avgLate: 20, deduction: "-", trend: "down" },
+                      { name: "Neha Gupta", dept: "Marketing", lateDays: 2, avgLate: 10, deduction: "-", trend: "stable" },
+                      { name: "Vikram Singh", dept: "Finance", lateDays: 2, avgLate: 8, deduction: "-", trend: "down" },
+                    ].map((emp, idx) => (
+                      <tr key={idx} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white text-xs font-bold">
+                              {emp.name.split(" ").map(n => n[0]).join("")}
+                            </div>
+                            <span className="text-sm font-medium text-gray-800">{emp.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{emp.dept}</td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                            emp.lateDays >= 5 ? "bg-red-100 text-red-700" : emp.lateDays >= 3 ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-700"
+                          }`}>
+                            {emp.lateDays} days
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600 text-center">{emp.avgLate} min</td>
+                        <td className="px-4 py-3 text-sm text-red-600 font-medium text-center">{emp.deduction}</td>
+                        <td className="px-4 py-3 text-center">
+                          {emp.trend === "up" && <span className="text-red-500 text-xs font-medium">↑ Increasing</span>}
+                          {emp.trend === "down" && <span className="text-green-500 text-xs font-medium">↓ Improving</span>}
+                          {emp.trend === "stable" && <span className="text-gray-500 text-xs font-medium">→ Stable</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Absenteeism Report */}
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 className="text-base font-semibold text-gray-800">Absenteeism Report - Top 10</h3>
+                <div className="flex items-center gap-2">
+                  <button className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                    <Download className="w-3.5 h-3.5" />
+                    Export
+                  </button>
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[800px]">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Employee</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Department</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Absent Days</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Unapproved</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Salary Impact</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {[
+                      { name: "Ravi Kumar", dept: "Sales", absentDays: 5, unapproved: 3, impact: "₹4,500", status: "warning" },
+                      { name: "Deepak Sharma", dept: "Production", absentDays: 4, unapproved: 2, impact: "₹3,200", status: "warning" },
+                      { name: "Meena Iyer", dept: "HR", absentDays: 3, unapproved: 1, impact: "₹2,100", status: "review" },
+                      { name: "Sneha Reddy", dept: "Production", absentDays: 3, unapproved: 0, impact: "-", status: "approved" },
+                      { name: "Amit Patel", dept: "IT", absentDays: 2, unapproved: 0, impact: "-", status: "approved" },
+                    ].map((emp, idx) => (
+                      <tr key={idx} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white text-xs font-bold">
+                              {emp.name.split(" ").map(n => n[0]).join("")}
+                            </div>
+                            <span className="text-sm font-medium text-gray-800">{emp.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{emp.dept}</td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                            emp.absentDays >= 4 ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"
+                          }`}>
+                            {emp.absentDays} days
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-red-600 font-medium text-center">{emp.unapproved}</td>
+                        <td className="px-4 py-3 text-sm text-gray-800 font-medium text-center">{emp.impact}</td>
+                        <td className="px-4 py-3 text-center">
+                          {emp.status === "warning" && <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700">Warning</span>}
+                          {emp.status === "review" && <span className="px-2 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-700">Under Review</span>}
+                          {emp.status === "approved" && <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">Approved</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Overtime Report */}
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 className="text-base font-semibold text-gray-800">Overtime Report - This Month</h3>
+                <div className="flex items-center gap-2">
+                  <button className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                    <Download className="w-3.5 h-3.5" />
+                    Export
+                  </button>
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[900px]">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Employee</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Department</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">OT Hours</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Rate</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">OT Amount</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Approval</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {[
+                      { name: "Rajesh Kumar", dept: "Production", otHours: 45, rate: "1.5X", amount: "₹6,750", approval: "approved" },
+                      { name: "Arun Kumar", dept: "Production", otHours: 38, rate: "2X", amount: "₹7,600", approval: "approved" },
+                      { name: "Sneha Reddy", dept: "Production", otHours: 32, rate: "1.5X", amount: "₹4,800", approval: "approved" },
+                      { name: "Vikram Singh", dept: "Production", otHours: 28, rate: "1.5X", amount: "₹4,200", approval: "pending" },
+                      { name: "Amit Joshi", dept: "IT", otHours: 15, rate: "1.5X", amount: "₹3,000", approval: "approved" },
+                    ].map((emp, idx) => (
+                      <tr key={idx} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white text-xs font-bold">
+                              {emp.name.split(" ").map(n => n[0]).join("")}
+                            </div>
+                            <span className="text-sm font-medium text-gray-800">{emp.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{emp.dept}</td>
+                        <td className="px-4 py-3 text-center">
+                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700">
+                            {emp.otHours} hrs
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600 text-center">{emp.rate}</td>
+                        <td className="px-4 py-3 text-sm text-green-600 font-semibold text-center">{emp.amount}</td>
+                        <td className="px-4 py-3 text-center">
+                          {emp.approval === "approved" && <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">Approved</span>}
+                          {emp.approval === "pending" && <span className="px-2 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-700">Pending</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}

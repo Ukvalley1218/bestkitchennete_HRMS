@@ -22,46 +22,20 @@ import logo from "../assets/image 31.png";
 import { PiCheckCircle, PiFactory } from "react-icons/pi";
 
 const menuItems = [
-  // { name: "CEO Dashboard", icon: LayoutDashboard, path: "/ceodashboard" },
-  // {
-  //   name: "Marketing",
-  //   icon: Megaphone,
-  //   path: "/marketing",
-  //   submenu: [
-  //     { name: "Dashboard", path: "/marketing/dashboard" },
-  //     { name: "Campaigns", path: "/marketing/campaigns" },
-  //     { name: "Leads", path: "/marketing/leads" },
-  //     { name: "Analytics", path: "/marketing/analytics" },
-  //   ],
-  // },
-  // { name: "Telecommunication", icon: Phone, path: "/tele/dashboard" },
-  // { name: "Interior", icon: SofaIcon, path: "/interior" },
-  // { name: "Sales", icon: ShoppingCart, path: "/sales/dashboard" },
-  // {
-  //   name: "Accounts/Finance",
-  //   icon: Wallet,
-  //   path: "/finance",
-  //   submenu: [
-  //     { name: "Finance Dashboard", path: "/finance/dashboard" },
-  //     { name: "Party Master", path: "/finance/party_dashboard" },
-  //     { name: "Sales Invoice", path: "/finance/sales_dashboard" },
-  //     { name: "GST Invoice", path: "/finance/gst_dashboard" },
-  //   ],
-  // },
   {
-    name: "HRMS", icon: Users, path: "/hrms/dashboard",
+    name: "HRMS",
+    icon: Users,
+    path: "/hrms/dashboard",
     submenu: [
       { name: "Dashboard", path: "/hrms/dashboard" },
-      { name: "Employees", path: "/hrms/employees" },
-      { name: "Incentives", path: "/hrms/incentives" },
       { name: "Recruitment", path: "/hrms/recruitment" },
-      { name: "Attendance & Shift Management", path: "/hrms/attendance" },
-      { name: "Leave Management", path: "/hrms/leave" },
-      { name: "Performance Management", path: "/hrms/performance" },
+      { name: "Attendance & Shift", path: "/hrms/attendance" },
+      { name: "Employee Management", path: "/hrms/employees" },
+      { name: "Leaves Management", path: "/hrms/leaves" },
+      { name: "Performance", path: "/hrms/performance" },
+      { name: "Incentives", path: "/hrms/incentives" },
       { name: "Calender & Training", path: "/hrms/calender" },
       { name: "Compilance", path: "/hrms/compilance" },
-
-
     ],
   },
   {
@@ -79,45 +53,20 @@ const menuItems = [
       { name: "Settings", path: "/hrms/payroll/settings" },
     ],
   },
-    // { name: "Production", icon: PiFactory, path: "/production/dashboard" },
-    // { name: "Operations", icon: PiCheckCircle, path: "/operations/dashboard" },
-    // {
-    //   name: "CRM",
-    //   icon: Users,
-    //   path: "/crm",
-    //   submenu: [
-    //     { name: "Dashboard", path: "/crm/dashboard" },
-    //     { name: "Customer History", path: "/crm/history" },
-    //   ],
-    // },
-    // { name: "Administration", icon: Settings, path: "/admin" },
-    // { name: "Inventory", icon: Package, path: "/inventory" },
-    // { name: "Project Tasks", icon: ClipboardList, path: "/tasks" },
-    // {
-    //   name: "Profile",
-    //   icon: User,
-    //   path: "/profile",
-    // submenu: [
-    //   { name: "Basic Info", path: "/finance/dashboard" },
-    //   { name: "Company Info", path: "/finance/party_dashboard" },
-    //   { name: "System", path: "/finance/sales_dashboard" },
-    //   { name: "Payroll", path: "/finance/gst_dashboard" },
-    //   { name: "Performance", path: "/finance/gst_dashboard" },
-    //   { name: "Docs", path: "/finance/gst_dashboard" },
-    //   { name: "Device Info", path: "/finance/gst_dashboard" },
-    //   { name: "Education", path: "/finance/gst_dashboard" },
-    //   { name: "System Tracking", path: "/finance/gst_dashboard" },
-    // ],
-  // },
 ];
 
 const SidebarLayout = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState(null);
+  const [expandedNested, setExpandedNested] = useState(null);
   const location = useLocation();
 
   const toggleSubmenu = (menuName) => {
     setExpandedMenu(expandedMenu === menuName ? null : menuName);
+  };
+
+  const toggleNested = (menuName) => {
+    setExpandedNested(expandedNested === menuName ? null : menuName);
   };
 
   /* ✅ AUTO OPEN SUBMENU WHEN ROUTE MATCHES */
@@ -125,11 +74,21 @@ const SidebarLayout = ({ children }) => {
     menuItems.forEach((item) => {
       if (item.submenu) {
         const isSubmenuActive = item.submenu.some(
-          (sub) => sub.path === location.pathname,
+          (sub) => sub.path === location.pathname ||
+            (sub.nestedSubmenu && sub.nestedSubmenu.some(nested => nested.path === location.pathname)),
         );
 
         if (isSubmenuActive) {
           setExpandedMenu(item.name);
+
+          // Also open nested submenu if route matches
+          if (item.submenu) {
+            item.submenu.forEach((sub) => {
+              if (sub.nestedSubmenu && sub.nestedSubmenu.some(nested => nested.path === location.pathname)) {
+                setExpandedNested(sub.name);
+              }
+            });
+          }
         }
       }
     });
@@ -214,22 +173,70 @@ const SidebarLayout = ({ children }) => {
                 {/* Submenu */}
                 {hasSubmenu && isExpanded && (
                   <div className="mt-1 ml-4 space-y-1 border-l-2 border-white/20 pl-3">
-                    {item.submenu.map((subitem) => (
-                      <NavLink
-                        key={subitem.path}
-                        to={subitem.path}
-                        onClick={() => setOpen(false)}
-                        className={({ isActive }) =>
-                          `block px-3 py-2 rounded-lg text-sm transition-colors
-                          ${isActive
-                            ? "bg-white/40 text-white font-medium"
-                            : "hover:bg-red-500/50"
-                          }`
-                        }
-                      >
-                        {subitem.name}
-                      </NavLink>
-                    ))}
+                    {item.submenu.map((subitem) => {
+                      // Check if this submenu item has nested items
+                      const hasNested = subitem.nestedSubmenu && subitem.nestedSubmenu.length > 0;
+                      const isNestedExpanded = expandedNested === subitem.name;
+
+                      if (hasNested) {
+                        return (
+                          <div key={subitem.name}>
+                            <button
+                              onClick={() => toggleNested(subitem.name)}
+                              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors
+                                ${isNestedExpanded
+                                  ? "bg-white/30 text-white"
+                                  : "hover:bg-red-500/50"
+                                }`}
+                            >
+                              <span>{subitem.name}</span>
+                              <ChevronDown
+                                size={14}
+                                className={`transform transition-transform ${isNestedExpanded ? "rotate-180" : ""}`}
+                              />
+                            </button>
+                            {/* Nested Submenu */}
+                            {isNestedExpanded && (
+                              <div className="ml-3 mt-1 space-y-1 border-l-2 border-white/30 pl-2">
+                                {subitem.nestedSubmenu.map((nestedItem) => (
+                                  <NavLink
+                                    key={nestedItem.path}
+                                    to={nestedItem.path}
+                                    onClick={() => setOpen(false)}
+                                    className={({ isActive }) =>
+                                      `block px-3 py-2 rounded-lg text-xs transition-colors
+                                      ${isActive
+                                        ? "bg-white/40 text-white font-medium"
+                                        : "hover:bg-red-500/50"
+                                      }`
+                                    }
+                                  >
+                                    {nestedItem.name}
+                                  </NavLink>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <NavLink
+                          key={subitem.path}
+                          to={subitem.path}
+                          onClick={() => setOpen(false)}
+                          className={({ isActive }) =>
+                            `block px-3 py-2 rounded-lg text-sm transition-colors
+                            ${isActive
+                              ? "bg-white/40 text-white font-medium"
+                              : "hover:bg-red-500/50"
+                            }`
+                          }
+                        >
+                          {subitem.name}
+                        </NavLink>
+                      );
+                    })}
                   </div>
                 )}
               </div>

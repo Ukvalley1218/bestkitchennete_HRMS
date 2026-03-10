@@ -810,7 +810,7 @@ const KanbanCard = ({ card, columnColor, onViewProfile, onDragStart, onDragEnd, 
 };
 
 // ─── Kanban Pipeline Page Component ───────────────────────────────────────────
-const KanbanPipelinePage = ({ onViewProfile, scrollToSection, scrollContainerRef, activeTab, onAddCandidate, cards: externalCards, onEditCandidate, onDeleteCandidate }) => {
+const KanbanPipelinePage = ({ onViewProfile, scrollToSection, scrollContainerRef, activeTab, onAddCandidate, cards: externalCards, onCardsChange, onEditCandidate, onDeleteCandidate }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [draggedCardId, setDraggedCardId] = useState(null);
   const [dragOverColumn, setDragOverColumn] = useState(null);
@@ -819,7 +819,7 @@ const KanbanPipelinePage = ({ onViewProfile, scrollToSection, scrollContainerRef
 
   // Use external cards if provided, otherwise use internal state
   const cards = externalCards || internalCards;
-  const setCards = externalCards ? () => {} : setInternalCards;
+  const setCards = onCardsChange || setInternalCards;
   const internalScrollRef = useRef(null);
   const actualScrollRef = scrollContainerRef || internalScrollRef;
 
@@ -3142,6 +3142,7 @@ const Recruitment = () => {
             activeTab={activeNav}
             onAddCandidate={handleOpenAddCandidate}
             cards={kanbanCardsData}
+            onCardsChange={setKanbanCardsData}
             onEditCandidate={handleEditCandidate}
             onDeleteCandidate={handleDeleteCandidate}
           />
