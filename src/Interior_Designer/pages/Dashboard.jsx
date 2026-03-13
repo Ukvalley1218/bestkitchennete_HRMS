@@ -6,40 +6,32 @@ const Dashboard = () => {
   // KPI Data
   const kpiData = [
     {
-      icon: <Folder size={20} weight="bold" />,
+      icon: <Folder size={28} weight="bold" />,
       number: "24",
       title: "Total Projects",
-      subtitle: "Active & completed",
       iconBgColor: "bg-red-100",
       iconTextColor: "text-red-600",
-      trend: "+3",
     },
     {
-      icon: <Clock size={20} weight="bold" />,
+      icon: <Clock size={28} weight="bold" />,
       number: "8",
       title: "Pending Reviews",
-      subtitle: "Awaiting approval",
       iconBgColor: "bg-yellow-100",
       iconTextColor: "text-yellow-600",
-      trend: "-2",
     },
     {
-      icon: <Files size={20} weight="bold" />,
+      icon: <Files size={28} weight="bold" />,
       number: "12",
       title: "Completed Designs",
-      subtitle: "This month",
       iconBgColor: "bg-green-100",
       iconTextColor: "text-green-600",
-      trend: "+5",
     },
     {
-      icon: <CheckCircle size={20} weight="bold" />,
+      icon: <CheckCircle size={28} weight="bold" />,
       number: "95%",
       title: "Client Satisfaction",
-      subtitle: "Average rating",
       iconBgColor: "bg-blue-100",
       iconTextColor: "text-blue-600",
-      trend: "+2%",
     },
   ];
 
@@ -105,10 +97,8 @@ const Dashboard = () => {
             icon={kpi.icon}
             number={kpi.number}
             title={kpi.title}
-            subtitle={kpi.subtitle}
             iconBgColor={kpi.iconBgColor}
             iconTextColor={kpi.iconTextColor}
-            trend={kpi.trend}
           />
         ))}
       </div>
