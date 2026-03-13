@@ -17,6 +17,7 @@ import {
   ChevronDown,
   LogOut,
   SofaIcon,
+  TrendingUp,
 } from "lucide-react";
 import logo from "../assets/image 31.png";
 import { PiCheckCircle, PiFactory } from "react-icons/pi";
@@ -75,6 +76,18 @@ const menuItems = [
       { name: "Offline Marketing", path: "/marketing/offline" },
       { name: "Leads & Attribution", path: "/marketing/leads" },
       { name: "Budget & ROI", path: "/marketing/budget" },
+    ],
+  },
+  {
+    name: "Sales",
+    icon: TrendingUp,
+    path: "/sales",
+    submenu: [
+      { name: "Dashboard", path: "/sales/dashboard" },
+      { name: "Lead Management", path: "/sales/leads" },
+      { name: "Sales Pipeline", path: "/sales/pipeline" },
+      { name: "Quotations", path: "/sales/quotations" },
+      { name: "Sales Report", path: "/sales/report" },
     ],
   },
   // { name: "Production", icon: PiFactory, path: "/production/dashboard" },

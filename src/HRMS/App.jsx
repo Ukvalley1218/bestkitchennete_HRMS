@@ -23,6 +23,15 @@ import {
   BudgetROI,
 } from "../Marketing/pages";
 
+// Sales imports
+import {
+  SalesDashboard,
+  LeadManagement,
+  SalesPipeline,
+  Quotations,
+  SalesReport,
+} from "../Sales_management/pages";
+
 function App() {
   return (
     <BrowserRouter>
@@ -56,6 +65,13 @@ function App() {
           <Route path="/marketing/social" element={<SocialMediaMarketing />} />
           <Route path="/marketing/leads" element={<LeadsAttribution />} />
           <Route path="/marketing/budget" element={<BudgetROI />} />
+
+          {/* Sales Routes */}
+          <Route path="/sales/dashboard" element={<SalesDashboard />} />
+          <Route path="/sales/leads" element={<LeadManagement />} />
+          <Route path="/sales/pipeline" element={<SalesPipeline />} />
+          <Route path="/sales/quotations" element={<Quotations />} />
+          <Route path="/sales/report" element={<SalesReport />} />
 
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/hrms/dashboard" replace />} />
