@@ -64,8 +64,7 @@ const DesignCard = ({ design, onView, onRedesign, onApprove }) => (
       {/* View Design Button */}
       <button
         onClick={() => onView(design)}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 mb-3 rounded-lg text-white font-medium transition-colors"
-        style={{ backgroundColor: '#2563EB' }}
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 mb-3 border border-gray-200 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
       >
         <Eye size={18} weight="bold" />
         View Design
