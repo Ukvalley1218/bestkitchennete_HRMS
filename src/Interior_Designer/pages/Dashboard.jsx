@@ -1,37 +1,29 @@
 import React from 'react';
 import { StatCard, ActivityItem } from '../components';
-import { Folder, Clock, Files, CheckCircle } from '@phosphor-icons/react';
+import { Folder, Play, Clock, Files } from '@phosphor-icons/react';
 
 const Dashboard = () => {
   // KPI Data
   const kpiData = [
     {
-      icon: <Folder size={28} weight="bold" />,
+      icon: <Folder size={20} weight="bold" />,
       number: "24",
       title: "Total Projects",
-      iconBgColor: "bg-red-100",
-      iconTextColor: "text-red-600",
     },
     {
-      icon: <Clock size={28} weight="bold" />,
+      icon: <Play size={20} weight="bold" />,
+      number: "6",
+      title: "Ongoing Projects",
+    },
+    {
+      icon: <Clock size={20} weight="bold" />,
       number: "8",
       title: "Pending Reviews",
-      iconBgColor: "bg-yellow-100",
-      iconTextColor: "text-yellow-600",
     },
     {
-      icon: <Files size={28} weight="bold" />,
+      icon: <Files size={20} weight="bold" />,
       number: "12",
       title: "Completed Designs",
-      iconBgColor: "bg-green-100",
-      iconTextColor: "text-green-600",
-    },
-    {
-      icon: <CheckCircle size={28} weight="bold" />,
-      number: "95%",
-      title: "Client Satisfaction",
-      iconBgColor: "bg-blue-100",
-      iconTextColor: "text-blue-600",
     },
   ];
 
@@ -97,8 +89,6 @@ const Dashboard = () => {
             icon={kpi.icon}
             number={kpi.number}
             title={kpi.title}
-            iconBgColor={kpi.iconBgColor}
-            iconTextColor={kpi.iconTextColor}
           />
         ))}
       </div>
