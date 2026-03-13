@@ -3,7 +3,7 @@ import {
   Eye, PencilSimple, Trash, CheckCircle, XCircle, Clock, Files, ChatCircle,
   MagnifyingGlass, Funnel, ArrowRight, ArrowClockwise, Download, Share,
   ThumbsUp, ThumbsDown, User, Calendar, Tag, Folder, Star, Warning,
-  X, Plus, Paperclip, NotePencil
+  X, Plus, Paperclip, NotePencil, FileText
 } from '@phosphor-icons/react';
 
 const DesignReview = () => {
@@ -335,72 +335,72 @@ const DesignReview = () => {
         </button>
       </div>
 
-      {/* Stats */}
+      {/* Stats - Marketing Dashboard Style */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center">
-              <Folder size={24} className="text-gray-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-800">{stats.total}</p>
-              <p className="text-sm text-gray-500">Total</p>
+        <div className="relative bg-white rounded-2xl p-5 flex flex-col gap-4 shadow-sm border border-gray-100 flex-1 min-w-[140px] overflow-hidden">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#FDE8E8', width: '40px', height: '40px', borderRadius: '12px' }}>
+              <Folder size={20} style={{ color: '#EF4444' }} weight="bold" />
             </div>
           </div>
-        </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-yellow-100 flex items-center justify-center">
-              <Clock size={24} className="text-yellow-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-800">{stats.pending}</p>
-              <p className="text-sm text-gray-500">Pending</p>
-            </div>
+          <div>
+            <p className="text-[2rem] font-semibold text-black leading-none tracking-tight">{stats.total}</p>
+            <p className="text-sm text-[#00000099] mt-1.5 font-medium">Total</p>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
-              <Eye size={24} className="text-blue-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-800">{stats.inReview}</p>
-              <p className="text-sm text-gray-500">In Review</p>
+        <div className="relative bg-white rounded-2xl p-5 flex flex-col gap-4 shadow-sm border border-gray-100 flex-1 min-w-[140px] overflow-hidden">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#FEF3C7', width: '40px', height: '40px', borderRadius: '12px' }}>
+              <Clock size={20} style={{ color: '#D97706' }} weight="bold" />
             </div>
           </div>
-        </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
-              <CheckCircle size={24} className="text-green-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-800">{stats.approved}</p>
-              <p className="text-sm text-gray-500">Approved</p>
-            </div>
+          <div>
+            <p className="text-[2rem] font-semibold text-black leading-none tracking-tight">{stats.pending}</p>
+            <p className="text-sm text-[#00000099] mt-1.5 font-medium">Pending</p>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center">
-              <XCircle size={24} className="text-red-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-800">{stats.rejected}</p>
-              <p className="text-sm text-gray-500">Rejected</p>
+        <div className="relative bg-white rounded-2xl p-5 flex flex-col gap-4 shadow-sm border border-gray-100 flex-1 min-w-[140px] overflow-hidden">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#DBEAFE', width: '40px', height: '40px', borderRadius: '12px' }}>
+              <Eye size={20} style={{ color: '#2563EB' }} weight="bold" />
             </div>
           </div>
+          <div>
+            <p className="text-[2rem] font-semibold text-black leading-none tracking-tight">{stats.inReview}</p>
+            <p className="text-sm text-[#00000099] mt-1.5 font-medium">In Review</p>
+          </div>
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
-              <ArrowClockwise size={24} className="text-orange-600" />
+        <div className="relative bg-white rounded-2xl p-5 flex flex-col gap-4 shadow-sm border border-gray-100 flex-1 min-w-[140px] overflow-hidden">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#D1FAE5', width: '40px', height: '40px', borderRadius: '12px' }}>
+              <CheckCircle size={20} style={{ color: '#059669' }} weight="bold" />
             </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-800">{stats.pendingRevision}</p>
-              <p className="text-sm text-gray-500">Revision</p>
+          </div>
+          <div>
+            <p className="text-[2rem] font-semibold text-black leading-none tracking-tight">{stats.approved}</p>
+            <p className="text-sm text-[#00000099] mt-1.5 font-medium">Approved</p>
+          </div>
+        </div>
+        <div className="relative bg-white rounded-2xl p-5 flex flex-col gap-4 shadow-sm border border-gray-100 flex-1 min-w-[140px] overflow-hidden">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#FEE2E2', width: '40px', height: '40px', borderRadius: '12px' }}>
+              <XCircle size={20} style={{ color: '#DC2626' }} weight="bold" />
             </div>
+          </div>
+          <div>
+            <p className="text-[2rem] font-semibold text-black leading-none tracking-tight">{stats.rejected}</p>
+            <p className="text-sm text-[#00000099] mt-1.5 font-medium">Rejected</p>
+          </div>
+        </div>
+        <div className="relative bg-white rounded-2xl p-5 flex flex-col gap-4 shadow-sm border border-gray-100 flex-1 min-w-[140px] overflow-hidden">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#FFEDD5', width: '40px', height: '40px', borderRadius: '12px' }}>
+              <ArrowClockwise size={20} style={{ color: '#EA580C' }} weight="bold" />
+            </div>
+          </div>
+          <div>
+            <p className="text-[2rem] font-semibold text-black leading-none tracking-tight">{stats.pendingRevision}</p>
+            <p className="text-sm text-[#00000099] mt-1.5 font-medium">Revision</p>
           </div>
         </div>
       </div>
