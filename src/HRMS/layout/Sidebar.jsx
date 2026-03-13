@@ -65,6 +65,18 @@ const menuItems = [
       { name: "Compilance", path: "/hrms/compilance" },
     ],
   },
+  {
+    name: "Marketing",
+    icon: Megaphone,
+    path: "/marketing",
+    submenu: [
+      { name: "Dashboard", path: "/marketing/dashboard" },
+      { name: "Campaign Management", path: "/marketing/campaigns" },
+      { name: "Offline Marketing", path: "/marketing/offline" },
+      { name: "Leads & Attribution", path: "/marketing/leads" },
+      { name: "Budget & ROI", path: "/marketing/budget" },
+    ],
+  },
   // { name: "Production", icon: PiFactory, path: "/production/dashboard" },
   // { name: "Operations", icon: PiCheckCircle, path: "/operations/dashboard" },
   // {
