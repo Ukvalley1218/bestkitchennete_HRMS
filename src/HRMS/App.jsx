@@ -29,7 +29,6 @@ import {
   ProjectManagement,
   DesignReview,
   ClientApproval,
-  Interior3DHeadProjectManagement,
 } from "../Interior_Designer/pages";
 
 function App() {
@@ -71,7 +70,6 @@ function App() {
           <Route path="/interior/projects" element={<ProjectManagement />} />
           <Route path="/interior/design-review" element={<DesignReview />} />
           <Route path="/interior/client-approval" element={<ClientApproval />} />
-          <Route path="/interior/assign-projects" element={<Interior3DHeadProjectManagement />} />
 
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/hrms/dashboard" replace />} />

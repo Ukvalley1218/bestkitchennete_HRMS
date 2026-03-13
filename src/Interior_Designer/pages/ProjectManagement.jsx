@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import {
   SquaresFour, List, UserPlus, CheckCircle, X, Building, User, Calendar,
-  Ruler, Tag, CaretDown, Eye, MagnifyingGlass, Clock, CurrencyInr,
-  Lightning, FileText, Phone, Envelope, Warning, Check, Info,
-  CalendarBlank, HourglassHigh, ArrowRight, PaperPlane, Folder
+  Ruler, CaretDown, MagnifyingGlass,
+  Lightning, FileText, Phone, Envelope, Check, Info,
+  CalendarBlank, HourglassHigh, ArrowRight, PaperPlane
 } from '@phosphor-icons/react';
-import { StatCard, ActivityItem } from '../components';
 
 // Measurement Tag Component
 const MeasurementTag = ({ label }) => (
@@ -737,30 +736,6 @@ const ProjectManagement = () => {
     },
   ]);
 
-  // KPI Data
-  const kpiData = [
-    {
-      icon: <Folder size={20} weight="bold" />,
-      number: projects.length.toString(),
-      title: "Total Projects",
-    },
-    {
-      icon: <UserPlus size={20} weight="bold" />,
-      number: projects.length.toString(),
-      title: "Pending Assignment",
-    },
-    {
-      icon: <Tag size={20} weight="bold" />,
-      number: [...new Set(projects.map(p => p.spaceType))].length.toString(),
-      title: "Space Types",
-    },
-    {
-      icon: <CheckCircle size={20} weight="bold" />,
-      number: "0",
-      title: "Assigned Today",
-    },
-  ];
-
   // Get unique space types for filter
   const spaceTypes = [...new Set(projects.map(p => p.spaceType))];
 
@@ -794,18 +769,6 @@ const ProjectManagement = () => {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Project Management</h1>
         <p className="text-gray-500 text-sm mt-1">Assign new projects from Sales to designers</p>
-      </div>
-
-      {/* KPI Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {kpiData.map((kpi, index) => (
-          <StatCard
-            key={index}
-            icon={kpi.icon}
-            number={kpi.number}
-            title={kpi.title}
-          />
-        ))}
       </div>
 
       {/* Filter Bar */}

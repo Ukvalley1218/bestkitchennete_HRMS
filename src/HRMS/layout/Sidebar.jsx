@@ -87,7 +87,6 @@ const menuItems = [
       { name: "Project Management", path: "/interior/projects" },
       { name: "Design Review", path: "/interior/design-review" },
       { name: "Client Approval", path: "/interior/client-approval" },
-      { name: "Assign Projects", path: "/interior/assign-projects" },
     ],
   },
   // { name: "Production", icon: PiFactory, path: "/production/dashboard" },
