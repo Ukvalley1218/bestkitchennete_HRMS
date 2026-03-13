@@ -784,8 +784,8 @@ const Interior3DHeadProjectManagement = () => {
       <div className="p-6">
         {/* Page Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Project Management</h1>
-          <p className="text-gray-500 text-sm mt-1">Assign new projects to designers</p>
+          <h1 className="text-2xl font-bold text-gray-900">Assign Projects</h1>
+          <p className="text-gray-500 text-sm mt-1">Assign new projects from Sales to designers</p>
         </div>
 
         {/* Stats Cards */}

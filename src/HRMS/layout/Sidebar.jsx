@@ -87,14 +87,7 @@ const menuItems = [
       { name: "Project Management", path: "/interior/projects" },
       { name: "Design Review", path: "/interior/design-review" },
       { name: "Client Approval", path: "/interior/client-approval" },
-    ],
-  },
-  {
-    name: "Interior 3D Head",
-    icon: SofaIcon,
-    path: "/interior/3d-head",
-    submenu: [
-      { name: "Project Management", path: "/interior/3d-head/projects" },
+      { name: "Assign Projects", path: "/interior/assign-projects" },
     ],
   },
   // { name: "Production", icon: PiFactory, path: "/production/dashboard" },
