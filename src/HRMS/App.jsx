@@ -23,6 +23,15 @@ import {
   BudgetROI,
 } from "../Marketing/pages";
 
+// Interior Designer imports
+import {
+  Dashboard as InteriorDashboard,
+  ProjectManagement,
+  DesignReview,
+  ClientApproval,
+  Interior3DHeadProjectManagement,
+} from "../Interior_Designer/pages";
+
 function App() {
   return (
     <BrowserRouter>
@@ -56,6 +65,13 @@ function App() {
           <Route path="/marketing/social" element={<SocialMediaMarketing />} />
           <Route path="/marketing/leads" element={<LeadsAttribution />} />
           <Route path="/marketing/budget" element={<BudgetROI />} />
+
+          {/* Interior Designer Routes */}
+          <Route path="/interior/dashboard" element={<InteriorDashboard />} />
+          <Route path="/interior/projects" element={<ProjectManagement />} />
+          <Route path="/interior/design-review" element={<DesignReview />} />
+          <Route path="/interior/client-approval" element={<ClientApproval />} />
+          <Route path="/interior/3d-head/projects" element={<Interior3DHeadProjectManagement />} />
 
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/hrms/dashboard" replace />} />
