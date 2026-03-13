@@ -355,12 +355,6 @@ const AssignDesignerModal = ({ isOpen, onClose, project, onAssign }) => {
                       {project.estimatedBudget || '₹2,50,000 - ₹5,00,000'}
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-xs text-gray-400 mb-1">Complexity</label>
-                    <div className="px-3 py-2.5 bg-white rounded-lg border border-gray-200 text-sm font-medium">
-                      <PriorityBadge priority={project.complexity || 'Medium'} />
-                    </div>
-                  </div>
                 </div>
               </div>
 
