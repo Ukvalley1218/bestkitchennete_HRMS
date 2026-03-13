@@ -84,7 +84,7 @@ const DesignCard = ({ design, onView, onRedesign, onApprove }) => (
         <button
           onClick={() => onApprove(design)}
           className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-white text-sm font-medium transition-colors"
-          style={{ backgroundColor: '#16A34A' }}
+          style={{ backgroundColor: '#EC1313' }}
         >
           <CheckCircle size={16} weight="bold" />
           Approve
@@ -390,7 +390,7 @@ const ApproveModal = ({ isOpen, onClose, design, onConfirm }) => {
           <button
             onClick={handleConfirm}
             className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-white font-medium transition-colors"
-            style={{ backgroundColor: '#16A34A' }}
+            style={{ backgroundColor: '#EC1313' }}
           >
             <CheckCircle size={18} weight="bold" />
             Confirm Approval
@@ -409,7 +409,7 @@ const DesignReview = () => {
       projectName: 'Modern L-Shape Kitchen',
       clientName: 'Arun Kumar',
       employeeName: 'Rajesh Kumar',
-      version: 'v2.1',
+      version: 'v1',
       spaceType: 'Kitchen',
       status: 'Under Review',
       submittedDate: '13 Mar 2026',
@@ -420,7 +420,7 @@ const DesignReview = () => {
       projectName: 'Luxury Living Room',
       clientName: 'Priya Sharma',
       employeeName: 'Priya Sharma',
-      version: 'v1.3',
+      version: 'v2',
       spaceType: 'Living Room',
       status: 'Pending Approval',
       submittedDate: '12 Mar 2026',
@@ -431,7 +431,7 @@ const DesignReview = () => {
       projectName: 'Master Bedroom Suite',
       clientName: 'Ramesh Patel',
       employeeName: 'Amit Singh',
-      version: 'v3.0',
+      version: 'v3',
       spaceType: 'Bedroom',
       status: 'Approved',
       submittedDate: '10 Mar 2026',
@@ -442,7 +442,7 @@ const DesignReview = () => {
       projectName: 'Traditional Mandir Design',
       clientName: 'Sunita Devi',
       employeeName: 'Sneha Patel',
-      version: 'v1.2',
+      version: 'v1',
       spaceType: 'Mandir',
       status: 'Needs Revision',
       submittedDate: '11 Mar 2026',
@@ -453,7 +453,7 @@ const DesignReview = () => {
       projectName: 'Corporate Office Interior',
       clientName: 'Tech Solutions Pvt Ltd',
       employeeName: 'Vikram Mehta',
-      version: 'v2.0',
+      version: 'v2',
       spaceType: 'Office',
       status: 'Under Review',
       submittedDate: '14 Mar 2026',
@@ -464,7 +464,7 @@ const DesignReview = () => {
       projectName: 'Kids Room Theme',
       clientName: 'Meera Joshi',
       employeeName: 'Rajesh Kumar',
-      version: 'v1.0',
+      version: 'v1',
       spaceType: 'Bedroom',
       status: 'Pending Approval',
       submittedDate: '15 Mar 2026',
@@ -475,7 +475,7 @@ const DesignReview = () => {
       projectName: 'Restaurant Interior',
       clientName: 'Spice Garden',
       employeeName: 'Lisa Anderson',
-      version: 'v1.5',
+      version: 'v2',
       spaceType: 'Commercial',
       status: 'Under Review',
       submittedDate: '09 Mar 2026',
@@ -486,7 +486,7 @@ const DesignReview = () => {
       projectName: 'Walk-in Wardrobe',
       clientName: 'Anjali Verma',
       employeeName: 'Amit Singh',
-      version: 'v2.2',
+      version: 'v2',
       spaceType: 'Bedroom',
       status: 'Approved',
       submittedDate: '08 Mar 2026',
@@ -497,7 +497,7 @@ const DesignReview = () => {
       projectName: 'Pooja Room Design',
       clientName: 'Vikram Singh',
       employeeName: 'Sneha Patel',
-      version: 'v1.1',
+      version: 'v1',
       spaceType: 'Mandir',
       status: 'Needs Revision',
       submittedDate: '07 Mar 2026',
