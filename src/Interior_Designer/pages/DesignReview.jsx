@@ -350,8 +350,8 @@ const DesignReview = () => {
         </div>
         <div className="relative bg-white rounded-2xl p-5 flex flex-col gap-4 shadow-sm border border-gray-100 flex-1 min-w-[140px] overflow-hidden">
           <div className="flex items-start justify-between">
-            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#FEF3C7', width: '40px', height: '40px', borderRadius: '12px' }}>
-              <Clock size={20} style={{ color: '#D97706' }} weight="bold" />
+            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#FDE8E8', width: '40px', height: '40px', borderRadius: '12px' }}>
+              <Clock size={20} style={{ color: '#EF4444' }} weight="bold" />
             </div>
           </div>
           <div>
@@ -361,8 +361,8 @@ const DesignReview = () => {
         </div>
         <div className="relative bg-white rounded-2xl p-5 flex flex-col gap-4 shadow-sm border border-gray-100 flex-1 min-w-[140px] overflow-hidden">
           <div className="flex items-start justify-between">
-            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#DBEAFE', width: '40px', height: '40px', borderRadius: '12px' }}>
-              <Eye size={20} style={{ color: '#2563EB' }} weight="bold" />
+            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#FDE8E8', width: '40px', height: '40px', borderRadius: '12px' }}>
+              <Eye size={20} style={{ color: '#EF4444' }} weight="bold" />
             </div>
           </div>
           <div>
@@ -372,8 +372,8 @@ const DesignReview = () => {
         </div>
         <div className="relative bg-white rounded-2xl p-5 flex flex-col gap-4 shadow-sm border border-gray-100 flex-1 min-w-[140px] overflow-hidden">
           <div className="flex items-start justify-between">
-            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#D1FAE5', width: '40px', height: '40px', borderRadius: '12px' }}>
-              <CheckCircle size={20} style={{ color: '#059669' }} weight="bold" />
+            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#FDE8E8', width: '40px', height: '40px', borderRadius: '12px' }}>
+              <CheckCircle size={20} style={{ color: '#EF4444' }} weight="bold" />
             </div>
           </div>
           <div>
@@ -383,8 +383,8 @@ const DesignReview = () => {
         </div>
         <div className="relative bg-white rounded-2xl p-5 flex flex-col gap-4 shadow-sm border border-gray-100 flex-1 min-w-[140px] overflow-hidden">
           <div className="flex items-start justify-between">
-            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#FEE2E2', width: '40px', height: '40px', borderRadius: '12px' }}>
-              <XCircle size={20} style={{ color: '#DC2626' }} weight="bold" />
+            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#FDE8E8', width: '40px', height: '40px', borderRadius: '12px' }}>
+              <XCircle size={20} style={{ color: '#EF4444' }} weight="bold" />
             </div>
           </div>
           <div>
@@ -394,8 +394,8 @@ const DesignReview = () => {
         </div>
         <div className="relative bg-white rounded-2xl p-5 flex flex-col gap-4 shadow-sm border border-gray-100 flex-1 min-w-[140px] overflow-hidden">
           <div className="flex items-start justify-between">
-            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#FFEDD5', width: '40px', height: '40px', borderRadius: '12px' }}>
-              <ArrowClockwise size={20} style={{ color: '#EA580C' }} weight="bold" />
+            <div className="flex items-center justify-center rounded-xl" style={{ backgroundColor: '#FDE8E8', width: '40px', height: '40px', borderRadius: '12px' }}>
+              <ArrowClockwise size={20} style={{ color: '#EF4444' }} weight="bold" />
             </div>
           </div>
           <div>
