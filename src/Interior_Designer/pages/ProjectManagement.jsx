@@ -6,13 +6,6 @@ import {
   CalendarBlank, HourglassHigh, ArrowRight, PaperPlane
 } from '@phosphor-icons/react';
 
-// Measurement Tag Component
-const MeasurementTag = ({ label }) => (
-  <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-red-50 text-red-700 border border-red-100">
-    {label}
-  </span>
-);
-
 // Priority Badge Component
 const PriorityBadge = ({ priority }) => {
   const colors = {
@@ -49,8 +42,21 @@ const WorkloadIndicator = ({ percentage }) => {
   );
 };
 
+// Helper function to count total measurements
+const getTotalMeasurements = (measurements) => {
+  if (!measurements) return 0;
+  return (
+    (measurements.kitchen?.length || 0) +
+    (measurements.hardware?.length || 0) +
+    (measurements.lighting?.length || 0)
+  );
+};
+
 // Project Card Component (Grid View)
-const ProjectCard = ({ project, onAssign }) => (
+const ProjectCard = ({ project, onAssign }) => {
+  const totalMeasurements = getTotalMeasurements(project.measurements);
+
+  return (
   <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
     {/* Top Section */}
     <div className="p-5 border-b border-gray-50">
@@ -74,21 +80,14 @@ const ProjectCard = ({ project, onAssign }) => (
         </div>
       </div>
 
-      {/* Measurements */}
+      {/* Measurements Count */}
       <div className="flex items-start gap-3">
         <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 shrink-0">
           <Ruler size={16} className="text-gray-400" />
         </div>
-        <div className="flex-1 min-w-0">
+        <div>
           <p className="text-xs text-gray-400">Measurements</p>
-          <div className="flex flex-wrap gap-1.5 mt-1">
-            {project.measurements.slice(0, 3).map((m, i) => (
-              <MeasurementTag key={i} label={m} />
-            ))}
-            {project.measurements.length > 3 && (
-              <span className="text-xs text-gray-500">+{project.measurements.length - 3} more</span>
-            )}
-          </div>
+          <p className="text-sm font-medium text-gray-700">{totalMeasurements} items recorded</p>
         </div>
       </div>
 
@@ -118,10 +117,14 @@ const ProjectCard = ({ project, onAssign }) => (
       </button>
     </div>
   </div>
-);
+  );
+};
 
 // Project Row Component (List View)
-const ProjectRow = ({ project, onAssign }) => (
+const ProjectRow = ({ project, onAssign }) => {
+  const totalMeasurements = getTotalMeasurements(project.measurements);
+
+  return (
   <tr className="bg-white border-b border-gray-100 hover:bg-gray-50 transition-colors">
     <td className="px-6 py-4">
       <p className="font-medium text-gray-900">{project.projectName}</p>
@@ -135,14 +138,7 @@ const ProjectRow = ({ project, onAssign }) => (
       </span>
     </td>
     <td className="px-6 py-4">
-      <div className="flex flex-wrap gap-1.5">
-        {project.measurements.slice(0, 3).map((m, i) => (
-          <MeasurementTag key={i} label={m} />
-        ))}
-        {project.measurements.length > 3 && (
-          <span className="text-xs text-gray-500 self-center">+{project.measurements.length - 3}</span>
-        )}
-      </div>
+      <p className="text-sm text-gray-600">{totalMeasurements} items</p>
     </td>
     <td className="px-6 py-4">
       <p className="text-sm text-gray-600">
@@ -160,7 +156,8 @@ const ProjectRow = ({ project, onAssign }) => (
       </button>
     </td>
   </tr>
-);
+  );
+};
 
 // Enhanced Assign Designer Modal Component
 const AssignDesignerModal = ({ isOpen, onClose, project, onAssign }) => {
@@ -287,7 +284,7 @@ const AssignDesignerModal = ({ isOpen, onClose, project, onAssign }) => {
             </span>
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-sm">
               <Ruler size={14} className="text-gray-400" />
-              {project.measurements.length} measurements
+              {getTotalMeasurements(project.measurements)} measurements
             </span>
           </div>
         </div>
@@ -360,16 +357,65 @@ const AssignDesignerModal = ({ isOpen, onClose, project, onAssign }) => {
 
               {/* Measurements */}
               <div className="bg-gray-50 rounded-xl p-5">
-                <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                  <Ruler size={16} className="text-gray-400" />
-                  Measurements from Sales
-                  <span className="ml-auto text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Read Only</span>
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {project.measurements.map((m, i) => (
-                    <MeasurementTag key={i} label={m} />
-                  ))}
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                    <Ruler size={16} className="text-gray-400" />
+                    Measurements from Sales
+                  </h3>
+                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Read Only</span>
                 </div>
+
+                {/* Kitchen/Space Measurements */}
+                {project.measurements?.kitchen && project.measurements.kitchen.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                      {project.spaceType === 'Kitchen' ? 'Kitchen Measurements' :
+                       project.spaceType === 'Bedroom' ? 'Bedroom Measurements' :
+                       project.spaceType === 'Living Room' ? 'Living Room Measurements' :
+                       project.spaceType === 'Mandir' ? 'Mandir Measurements' :
+                       project.spaceType === 'Office' ? 'Cabin Measurements' :
+                       'Space Measurements'}
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {project.measurements.kitchen.map((m, i) => (
+                        <div key={i} className="flex justify-between items-center bg-white px-3 py-2 rounded-lg border border-gray-200">
+                          <span className="text-sm text-gray-600">{m.name}</span>
+                          <span className="text-sm font-medium text-gray-800">{m.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Hardware Details */}
+                {project.measurements?.hardware && project.measurements.hardware.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Hardware Details</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {project.measurements.hardware.map((m, i) => (
+                        <div key={i} className="flex justify-between items-center bg-white px-3 py-2 rounded-lg border border-gray-200">
+                          <span className="text-sm text-gray-600">{m.name}</span>
+                          <span className="text-sm font-medium text-gray-800">{m.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Lighting */}
+                {project.measurements?.lighting && project.measurements.lighting.length > 0 && (
+                  <div>
+                    <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Lighting</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {project.measurements.lighting.map((m, i) => (
+                        <div key={i} className="flex justify-between items-center bg-white px-3 py-2 rounded-lg border border-gray-200">
+                          <span className="text-sm text-gray-600">{m.name}</span>
+                          <span className="text-sm font-medium text-gray-800">{m.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Client Contact */}
@@ -643,90 +689,225 @@ const ProjectManagement = () => {
       projectName: 'L-Shape Kitchen Design',
       clientName: 'Arun Kumar',
       spaceType: 'Kitchen',
-      measurements: ['Cabinet Depth', 'Loft Laminate', 'Handles', 'Hinges', 'Channel', 'Profile Lights'],
       startDate: '2026-03-06',
       estimatedBudget: '₹2,50,000 - ₹4,00,000',
-      complexity: 'Medium',
+      measurements: {
+        kitchen: [
+          { name: 'Cabinet Depth', value: '24"' },
+          { name: 'Cabinet Height', value: '36"' },
+          { name: 'Cabinet Length', value: '8\'6"' },
+          { name: 'Loft Laminate', value: '10\' × 2\' × 1.5"' },
+          { name: 'Outer Side Laminate', value: 'Marine Ply' },
+          { name: 'Storage Unit', value: '3\' × 2\' × 2"' },
+          { name: 'Spice Rack', value: '1.5\' × 1\' × 0.5"' },
+        ],
+        hardware: [
+          { name: 'Handles', value: 'Stainless Steel' },
+          { name: 'Hinges', value: 'Soft Close' },
+          { name: 'Channel', value: 'Soft Close' },
+        ],
+        lighting: [
+          { name: 'Profile Lights', value: 'LED 12W/m' },
+        ],
+      },
     },
     {
       id: 2,
       projectName: 'Modern Living Room Interior',
       clientName: 'Priya Sharma',
       spaceType: 'Living Room',
-      measurements: ['Wall Panel Height', 'TV Unit Width', 'Sofa Back Panel', 'Ceiling Height'],
       startDate: '2026-03-08',
       estimatedBudget: '₹3,00,000 - ₹5,00,000',
-      complexity: 'High',
+      measurements: {
+        kitchen: [
+          { name: 'Wall Panel Height', value: '9"' },
+          { name: 'TV Unit Width', value: '12"' },
+          { name: 'TV Unit Depth', value: '1.5"' },
+          { name: 'Sofa Back Panel', value: '10\' × 4\'' },
+          { name: 'Ceiling Height', value: '10\'' },
+        ],
+        hardware: [
+          { name: 'Handles', value: 'Matte Black' },
+          { name: 'Hinges', value: 'Soft Close' },
+        ],
+        lighting: [
+          { name: 'Profile Lights', value: 'LED 18W/m' },
+          { name: 'Cove Lights', value: 'RGB LED' },
+        ],
+      },
     },
     {
       id: 3,
       projectName: 'Master Bedroom Wardrobe',
       clientName: 'Ramesh Patel',
       spaceType: 'Bedroom',
-      measurements: ['Wardrobe Depth', 'Loft Height', 'Drawer Size', 'Handle Type', 'Hinges'],
       startDate: '2026-03-10',
       estimatedBudget: '₹1,50,000 - ₹2,50,000',
-      complexity: 'Low',
+      measurements: {
+        kitchen: [
+          { name: 'Wardrobe Depth', value: '24"' },
+          { name: 'Wardrobe Height', value: '7\'' },
+          { name: 'Wardrobe Length', value: '10"' },
+          { name: 'Loft Height', value: '2\'' },
+          { name: 'Drawer Size', value: '18" × 6"' },
+        ],
+        hardware: [
+          { name: 'Handles', value: 'Chrome Finish' },
+          { name: 'Hinges', value: 'Soft Close' },
+          { name: 'Channel', value: 'Normal Close' },
+        ],
+        lighting: [
+          { name: 'Profile Lights', value: 'LED 12W/m' },
+        ],
+      },
     },
     {
       id: 4,
       projectName: 'Traditional Mandir Design',
       clientName: 'Sunita Devi',
       spaceType: 'Mandir',
-      measurements: ['Mandir Size', 'Drawer Size', 'Door Size', 'Knobs', 'Inner Laminate', 'Outer Laminate', 'CNC Design'],
       startDate: '2026-03-12',
       estimatedBudget: '₹80,000 - ₹1,50,000',
-      complexity: 'High',
+      measurements: {
+        kitchen: [
+          { name: 'Mandir Size', value: '4\' × 3\' × 1\'' },
+          { name: 'Drawer Size', value: '12" × 8"' },
+          { name: 'Door Size', value: '2\' × 3\'' },
+          { name: 'Inner Laminate', value: 'Teak Finish' },
+          { name: 'Outer Laminate', value: 'Dark Walnut' },
+          { name: 'CNC Design', value: 'Floral Pattern' },
+        ],
+        hardware: [
+          { name: 'Knobs', value: 'Brass Antique' },
+          { name: 'Hinges', value: 'Concealed' },
+        ],
+        lighting: [
+          { name: 'Profile Lights', value: 'Warm LED' },
+        ],
+      },
     },
     {
       id: 5,
       projectName: 'Office Cabin Interior',
       clientName: 'Tech Solutions Pvt Ltd',
       spaceType: 'Office',
-      measurements: ['Cabin Size', 'Desk Height', 'Storage Units', 'Meeting Table', 'Cable Management'],
       startDate: '2026-03-14',
       estimatedBudget: '₹4,00,000 - ₹6,00,000',
-      complexity: 'Medium',
+      measurements: {
+        kitchen: [
+          { name: 'Cabin Size', value: '12\' × 10\'' },
+          { name: 'Desk Height', value: '30"' },
+          { name: 'Desk Depth', value: '24"' },
+          { name: 'Storage Units', value: '6\' × 2\'' },
+          { name: 'Meeting Table', value: '8\' × 4\'' },
+        ],
+        hardware: [
+          { name: 'Handles', value: 'Brushed Nickel' },
+          { name: 'Hinges', value: 'Soft Close' },
+          { name: 'Channel', value: 'Soft Close' },
+        ],
+        lighting: [
+          { name: 'Profile Lights', value: 'LED 24W/m' },
+        ],
+      },
     },
     {
       id: 6,
       projectName: 'Compact Kitchen Renovation',
       clientName: 'Meera Joshi',
       spaceType: 'Kitchen',
-      measurements: ['Kitchen Laminate', 'Cabinet Height', 'Sink Area', 'Chimney Placement'],
       startDate: '2026-03-15',
       estimatedBudget: '₹1,00,000 - ₹2,00,000',
-      complexity: 'Low',
+      measurements: {
+        kitchen: [
+          { name: 'Cabinet Depth', value: '22"' },
+          { name: 'Cabinet Height', value: '32"' },
+          { name: 'Loft Laminate', value: '8\' × 1.5\' × 1"' },
+          { name: 'Sink Area', value: '3\' × 2\'' },
+          { name: 'Chimney Placement', value: 'Center' },
+        ],
+        hardware: [
+          { name: 'Handles', value: 'Aluminum' },
+          { name: 'Hinges', value: 'Normal Close' },
+        ],
+        lighting: [
+          { name: 'Profile Lights', value: 'LED 10W/m' },
+        ],
+      },
     },
     {
       id: 7,
       projectName: 'Kids Room Design',
       clientName: 'Vikram Singh',
       spaceType: 'Bedroom',
-      measurements: ['Bed Size', 'Study Table', 'Wardrobe', 'Toy Storage', 'Wall Art'],
       startDate: '2026-03-16',
       estimatedBudget: '₹1,80,000 - ₹3,00,000',
-      complexity: 'Medium',
+      measurements: {
+        kitchen: [
+          { name: 'Bed Size', value: '6\' × 4\'' },
+          { name: 'Study Table', value: '4\' × 2\'' },
+          { name: 'Wardrobe Depth', value: '24"' },
+          { name: 'Toy Storage', value: '3\' × 2\'' },
+          { name: 'Wall Art Area', value: '6\' × 4\'' },
+        ],
+        hardware: [
+          { name: 'Handles', value: 'Colorful Plastic' },
+          { name: 'Hinges', value: 'Soft Close' },
+        ],
+        lighting: [
+          { name: 'Profile Lights', value: 'RGB LED' },
+        ],
+      },
     },
     {
       id: 8,
       projectName: 'Restaurant Counter Design',
       clientName: 'Spice Garden Restaurant',
       spaceType: 'Commercial',
-      measurements: ['Counter Height', 'Storage Depth', 'Display Area', 'Billing Counter', 'Menu Board'],
       startDate: '2026-03-18',
       estimatedBudget: '₹5,00,000 - ₹8,00,000',
-      complexity: 'High',
+      measurements: {
+        kitchen: [
+          { name: 'Counter Height', value: '36"' },
+          { name: 'Counter Length', value: '12\'' },
+          { name: 'Counter Depth', value: '30"' },
+          { name: 'Storage Depth', value: '24"' },
+          { name: 'Display Area', value: '8\' × 3\'' },
+          { name: 'Billing Counter', value: '4\' × 2\'' },
+          { name: 'Menu Board', value: '6\' × 4\'' },
+        ],
+        hardware: [
+          { name: 'Handles', value: 'Stainless Steel' },
+          { name: 'Hinges', value: 'Heavy Duty' },
+          { name: 'Channel', value: 'Soft Close' },
+        ],
+        lighting: [
+          { name: 'Profile Lights', value: 'LED 30W/m' },
+        ],
+      },
     },
     {
       id: 9,
       projectName: 'Pooja Room Interior',
       clientName: 'Anjali Verma',
       spaceType: 'Mandir',
-      measurements: ['Mandir Size', 'Door Design', 'Inner Laminate', 'Outer Laminate', 'Lighting'],
       startDate: '2026-03-20',
       estimatedBudget: '₹60,000 - ₹1,20,000',
-      complexity: 'Low',
+      measurements: {
+        kitchen: [
+          { name: 'Mandir Size', value: '3\' × 2\' × 1\'' },
+          { name: 'Door Design', value: 'Carved Wood' },
+          { name: 'Inner Laminate', value: 'Light Oak' },
+          { name: 'Outer Laminate', value: 'Cherry Wood' },
+        ],
+        hardware: [
+          { name: 'Knobs', value: 'Golden Brass' },
+          { name: 'Hinges', value: 'Concealed' },
+        ],
+        lighting: [
+          { name: 'Profile Lights', value: 'Warm White LED' },
+        ],
+      },
     },
   ]);
 
