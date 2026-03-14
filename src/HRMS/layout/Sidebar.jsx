@@ -17,6 +17,7 @@ import {
   ChevronDown,
   LogOut,
   SofaIcon,
+  Palette,
 } from "lucide-react";
 import logo from "../assets/image 31.png";
 import { PiCheckCircle, PiFactory } from "react-icons/pi";
@@ -75,6 +76,17 @@ const menuItems = [
       { name: "Offline/Online Marketing", path: "/marketing/offline" },
       { name: "Leads & Attribution", path: "/marketing/leads" },
       { name: "Budget & ROI", path: "/marketing/budget" },
+    ],
+  },
+  {
+    name: "Interior Designer",
+    icon: Palette,
+    path: "/interior",
+    submenu: [
+      { name: "Dashboard", path: "/interior/dashboard" },
+      { name: "Project Management", path: "/interior/projects" },
+      { name: "Design Review", path: "/interior/design-review" },
+      { name: "Client Approval", path: "/interior/client-approval" },
     ],
   },
   // { name: "Production", icon: PiFactory, path: "/production/dashboard" },
