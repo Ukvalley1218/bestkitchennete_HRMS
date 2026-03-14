@@ -72,7 +72,7 @@ const menuItems = [
     submenu: [
       { name: "Dashboard", path: "/marketing/dashboard" },
       { name: "Campaign Management", path: "/marketing/campaigns" },
-      { name: "Offline Marketing", path: "/marketing/offline" },
+      { name: "Offline/Online Marketing", path: "/marketing/offline" },
       { name: "Leads & Attribution", path: "/marketing/leads" },
       { name: "Budget & ROI", path: "/marketing/budget" },
     ],
