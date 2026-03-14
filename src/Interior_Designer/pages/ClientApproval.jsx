@@ -2,6 +2,31 @@ import React, { useState } from 'react';
 import { PaperPlaneTilt, X, Building, Calendar, User, Tag } from '@phosphor-icons/react';
 import KitchenImg from '../assets/Kitchen.jpg';
 import MiniDptoImg from '../assets/MiniDpto.jpg';
+import design1Img from '../assets/design1.jpg';
+import design2Img from '../assets/design2.jpg';
+import poojaRoomImg from '../assets/pooja_room.jpg';
+import closetImg from '../assets/closet.jpg';
+import cafeImg from '../assets/cafe.jpg';
+import petRoomImg from '../assets/pet_room.jpg';
+import officeImg from '../assets/office.jpg';
+import profileImg from '../assets/profile.jpeg';
+import miniDptoImg2 from '../assets/mini_dpto.jpg';
+import kitchen2Img from '../assets/kitchen2.jpg';
+
+// Additional images for different space types
+const images = {
+  kitchen: KitchenImg,
+  kitchen2: kitchen2Img,
+  livingRoom: cafeImg,
+  bedroom: MiniDptoImg,
+  bedroom2: petRoomImg,
+  mandir: poojaRoomImg,
+  office: officeImg,
+  commercial: cafeImg,
+  wardrobe: closetImg,
+  design1: design1Img,
+  design2: design2Img,
+};
 
 // Version Badge Component
 const VersionBadge = ({ version }) => (
@@ -102,7 +127,7 @@ const ClientApproval = () => {
       clientName: 'Arun Kumar',
       version: 'v1',
       sentDate: '13 Mar 2026',
-      image: KitchenImg,
+      image: images.kitchen,
     },
     {
       id: 2,
@@ -110,7 +135,7 @@ const ClientApproval = () => {
       clientName: 'Priya Sharma',
       version: 'v2',
       sentDate: '12 Mar 2026',
-      image: MiniDptoImg,
+      image: images.livingRoom,
     },
     {
       id: 3,
@@ -118,7 +143,7 @@ const ClientApproval = () => {
       clientName: 'Ramesh Patel',
       version: 'v3',
       sentDate: '10 Mar 2026',
-      image: MiniDptoImg,
+      image: images.bedroom,
     },
     {
       id: 4,
@@ -126,7 +151,7 @@ const ClientApproval = () => {
       clientName: 'Sunita Devi',
       version: 'v1',
       sentDate: '11 Mar 2026',
-      image: MiniDptoImg,
+      image: images.mandir,
     },
     {
       id: 5,
@@ -134,7 +159,7 @@ const ClientApproval = () => {
       clientName: 'Tech Solutions Pvt Ltd',
       version: 'v2',
       sentDate: '14 Mar 2026',
-      image: MiniDptoImg,
+      image: images.office,
     },
     {
       id: 6,
@@ -142,7 +167,7 @@ const ClientApproval = () => {
       clientName: 'Meera Joshi',
       version: 'v1',
       sentDate: '15 Mar 2026',
-      image: MiniDptoImg,
+      image: images.bedroom2,
     },
     {
       id: 7,
@@ -150,7 +175,7 @@ const ClientApproval = () => {
       clientName: 'Spice Garden',
       version: 'v2',
       sentDate: '09 Mar 2026',
-      image: MiniDptoImg,
+      image: images.commercial,
     },
     {
       id: 8,
@@ -158,7 +183,7 @@ const ClientApproval = () => {
       clientName: 'Anjali Verma',
       version: 'v2',
       sentDate: '08 Mar 2026',
-      image: MiniDptoImg,
+      image: images.wardrobe,
     },
   ]);
 

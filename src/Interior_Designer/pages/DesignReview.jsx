@@ -5,6 +5,31 @@ import {
 } from '@phosphor-icons/react';
 import KitchenImg from '../assets/Kitchen.jpg';
 import MiniDptoImg from '../assets/MiniDpto.jpg';
+import design1Img from '../assets/design1.jpg';
+import design2Img from '../assets/design2.jpg';
+import poojaRoomImg from '../assets/pooja_room.jpg';
+import closetImg from '../assets/closet.jpg';
+import cafeImg from '../assets/cafe.jpg';
+import petRoomImg from '../assets/pet_room.jpg';
+import officeImg from '../assets/office.jpg';
+import profileImg from '../assets/profile.jpeg';
+import miniDptoImg2 from '../assets/mini_dpto.jpg';
+import kitchen2Img from '../assets/kitchen2.jpg';
+
+// Additional images for different space types
+const images = {
+  kitchen: KitchenImg,
+  kitchen2: kitchen2Img,
+  livingRoom: cafeImg,
+  bedroom: MiniDptoImg,
+  bedroom2: petRoomImg,
+  mandir: poojaRoomImg,
+  office: officeImg,
+  commercial: cafeImg,
+  wardrobe: closetImg,
+  design1: design1Img,
+  design2: design2Img,
+};
 
 // Status Badge Component
 const StatusBadge = ({ status }) => {
@@ -413,7 +438,7 @@ const DesignReview = () => {
       spaceType: 'Kitchen',
       status: 'Under Review',
       submittedDate: '13 Mar 2026',
-      image: KitchenImg,
+      image: images.kitchen,
     },
     {
       id: 2,
@@ -424,7 +449,7 @@ const DesignReview = () => {
       spaceType: 'Living Room',
       status: 'Ongoing',
       submittedDate: '12 Mar 2026',
-      image: MiniDptoImg,
+      image: images.livingRoom,
     },
     {
       id: 3,
@@ -435,7 +460,7 @@ const DesignReview = () => {
       spaceType: 'Bedroom',
       status: 'Completed',
       submittedDate: '10 Mar 2026',
-      image: MiniDptoImg,
+      image: images.bedroom,
     },
     {
       id: 4,
@@ -446,7 +471,7 @@ const DesignReview = () => {
       spaceType: 'Mandir',
       status: 'Under Review',
       submittedDate: '11 Mar 2026',
-      image: MiniDptoImg,
+      image: images.mandir,
     },
     {
       id: 5,
@@ -457,7 +482,7 @@ const DesignReview = () => {
       spaceType: 'Office',
       status: 'Ongoing',
       submittedDate: '14 Mar 2026',
-      image: MiniDptoImg,
+      image: images.office,
     },
     {
       id: 6,
@@ -468,7 +493,7 @@ const DesignReview = () => {
       spaceType: 'Bedroom',
       status: 'Under Review',
       submittedDate: '15 Mar 2026',
-      image: MiniDptoImg,
+      image: images.bedroom2,
     },
     {
       id: 7,
@@ -479,7 +504,7 @@ const DesignReview = () => {
       spaceType: 'Commercial',
       status: 'Completed',
       submittedDate: '09 Mar 2026',
-      image: MiniDptoImg,
+      image: images.commercial,
     },
     {
       id: 8,
@@ -490,7 +515,7 @@ const DesignReview = () => {
       spaceType: 'Bedroom',
       status: 'Completed',
       submittedDate: '08 Mar 2026',
-      image: MiniDptoImg,
+      image: images.wardrobe,
     },
     {
       id: 9,
@@ -501,7 +526,18 @@ const DesignReview = () => {
       spaceType: 'Mandir',
       status: 'Ongoing',
       submittedDate: '07 Mar 2026',
-      image: MiniDptoImg,
+      image: images.mandir,
+    },
+    {
+      id: 10,
+      projectName: 'Modern Kitchen Design',
+      clientName: 'Rahul Mehta',
+      employeeName: 'Rajesh Kumar',
+      version: 'v2',
+      spaceType: 'Kitchen',
+      status: 'Under Review',
+      submittedDate: '06 Mar 2026',
+      image: images.kitchen2,
     },
   ]);
 
