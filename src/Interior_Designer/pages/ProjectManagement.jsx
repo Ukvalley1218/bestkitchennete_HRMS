@@ -5,6 +5,7 @@ import {
   Lightning, FileText, Phone, Envelope, Check, Info,
   CalendarBlank, HourglassHigh, ArrowRight, PaperPlane
 } from '@phosphor-icons/react';
+import measurementsImg from '../assets/measurements.jpg';
 
 // Priority Badge Component
 const PriorityBadge = ({ priority }) => {
@@ -363,6 +364,15 @@ const AssignDesignerModal = ({ isOpen, onClose, project, onAssign }) => {
                     Measurements from Sales
                   </h3>
                   <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Read Only</span>
+                </div>
+
+                {/* Handwritten Measurements Image */}
+                <div className="mb-4">
+                  <img
+                    src={measurementsImg}
+                    alt="Handwritten Measurements"
+                    className="w-full max-w-md mx-auto rounded-lg border border-gray-200 shadow-sm"
+                  />
                 </div>
 
                 {/* Kitchen/Space Measurements */}

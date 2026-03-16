@@ -1,5 +1,32 @@
 import React, { useState } from 'react';
 import { PaperPlaneTilt, X, Building, Calendar, User, Tag } from '@phosphor-icons/react';
+import KitchenImg from '../assets/Kitchen.jpg';
+import MiniDptoImg from '../assets/MiniDpto.jpg';
+import design1Img from '../assets/design1.jpg';
+import design2Img from '../assets/design2.jpg';
+import poojaRoomImg from '../assets/pooja_room.jpg';
+import closetImg from '../assets/closet.jpg';
+import cafeImg from '../assets/cafe.jpg';
+import petRoomImg from '../assets/pet_room.jpg';
+import officeImg from '../assets/office.jpg';
+import profileImg from '../assets/profile.jpeg';
+import miniDptoImg2 from '../assets/mini_dpto.jpg';
+import kitchen2Img from '../assets/kitchen2.jpg';
+
+// Additional images for different space types
+const images = {
+  kitchen: KitchenImg,
+  kitchen2: kitchen2Img,
+  livingRoom: cafeImg,
+  bedroom: MiniDptoImg,
+  bedroom2: petRoomImg,
+  mandir: poojaRoomImg,
+  office: officeImg,
+  commercial: cafeImg,
+  wardrobe: closetImg,
+  design1: design1Img,
+  design2: design2Img,
+};
 
 // Version Badge Component
 const VersionBadge = ({ version }) => (
@@ -100,7 +127,7 @@ const ClientApproval = () => {
       clientName: 'Arun Kumar',
       version: 'v1',
       sentDate: '13 Mar 2026',
-      image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop',
+      image: images.kitchen,
     },
     {
       id: 2,
@@ -108,7 +135,7 @@ const ClientApproval = () => {
       clientName: 'Priya Sharma',
       version: 'v2',
       sentDate: '12 Mar 2026',
-      image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=400&h=300&fit=crop',
+      image: images.livingRoom,
     },
     {
       id: 3,
@@ -116,7 +143,7 @@ const ClientApproval = () => {
       clientName: 'Ramesh Patel',
       version: 'v3',
       sentDate: '10 Mar 2026',
-      image: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=400&h=300&fit=crop',
+      image: images.bedroom,
     },
     {
       id: 4,
@@ -124,7 +151,7 @@ const ClientApproval = () => {
       clientName: 'Sunita Devi',
       version: 'v1',
       sentDate: '11 Mar 2026',
-      image: 'https://images.unsplash.com/photo-1604754742629-3e5728249d73?w=400&h=300&fit=crop',
+      image: images.mandir,
     },
     {
       id: 5,
@@ -132,7 +159,7 @@ const ClientApproval = () => {
       clientName: 'Tech Solutions Pvt Ltd',
       version: 'v2',
       sentDate: '14 Mar 2026',
-      image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop',
+      image: images.office,
     },
     {
       id: 6,
@@ -140,7 +167,7 @@ const ClientApproval = () => {
       clientName: 'Meera Joshi',
       version: 'v1',
       sentDate: '15 Mar 2026',
-      image: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?w=400&h=300&fit=crop',
+      image: images.bedroom2,
     },
     {
       id: 7,
@@ -148,7 +175,7 @@ const ClientApproval = () => {
       clientName: 'Spice Garden',
       version: 'v2',
       sentDate: '09 Mar 2026',
-      image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop',
+      image: images.commercial,
     },
     {
       id: 8,
@@ -156,7 +183,7 @@ const ClientApproval = () => {
       clientName: 'Anjali Verma',
       version: 'v2',
       sentDate: '08 Mar 2026',
-      image: 'https://images.unsplash.com/photo-1558997519-83ea9252edf8?w=400&h=300&fit=crop',
+      image: images.wardrobe,
     },
   ]);
 
