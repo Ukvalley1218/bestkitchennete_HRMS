@@ -1,4 +1,4 @@
-import { MapPin, Calendar, DollarSign, Users, TrendingUp, User, Eye } from "lucide-react";
+import { MapPin, Calendar, IndianRupee, Users, TrendingUp, User, Eye } from "lucide-react";
 
 const CampaignCard = ({ campaign, onViewDetails }) => {
   const getStatusBadge = (status) => {
@@ -52,7 +52,7 @@ const CampaignCard = ({ campaign, onViewDetails }) => {
             <span>{campaign.startDate} - {campaign.endDate}</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-600">
-            <DollarSign size={16} className="text-gray-400 flex-shrink-0" />
+            <IndianRupee size={16} className="text-gray-400 flex-shrink-0" />
             <span>
               <span className="font-medium">{campaign.budget}</span>
               <span className="text-gray-400 mx-1">/</span>

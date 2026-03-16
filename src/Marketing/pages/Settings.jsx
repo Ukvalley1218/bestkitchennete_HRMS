@@ -27,9 +27,9 @@ const Settings = () => {
               <p className="text-xs text-gray-500">Set your preferred currency for reports</p>
             </div>
             <select className="border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#FF1E1E]">
+              <option>INR (₹)</option>
               <option>USD ($)</option>
               <option>EUR (€)</option>
-              <option>INR (₹)</option>
             </select>
           </div>
           <div className="flex items-center justify-between">

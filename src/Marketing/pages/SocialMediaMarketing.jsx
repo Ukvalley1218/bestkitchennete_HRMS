@@ -1,9 +1,9 @@
 const SocialMediaMarketing = () => {
   const socialChannels = [
-    { id: 1, name: "Instagram Campaign", platform: "Instagram", followers: "45.2K", engagement: "4.2%", leads: 156, budget: "$5,000" },
-    { id: 2, name: "Facebook Ads", platform: "Facebook", followers: "12.8K", engagement: "3.1%", leads: 89, budget: "$3,500" },
-    { id: 3, name: "LinkedIn Outreach", platform: "LinkedIn", followers: "8.5K", engagement: "5.8%", leads: 67, budget: "$2,000" },
-    { id: 4, name: "YouTube Pre-roll", platform: "YouTube", followers: "22.1K", engagement: "2.9%", leads: 134, budget: "$7,500" },
+    { id: 1, name: "Instagram Campaign", platform: "Instagram", followers: "45.2K", engagement: "4.2%", leads: 156, budget: "₹4,15,000" },
+    { id: 2, name: "Facebook Ads", platform: "Facebook", followers: "12.8K", engagement: "3.1%", leads: 89, budget: "₹2,90,500" },
+    { id: 3, name: "LinkedIn Outreach", platform: "LinkedIn", followers: "8.5K", engagement: "5.8%", leads: 67, budget: "₹1,66,000" },
+    { id: 4, name: "YouTube Pre-roll", platform: "YouTube", followers: "22.1K", engagement: "2.9%", leads: 134, budget: "₹6,22,500" },
   ];
 
   const getPlatformColor = (platform) => {
@@ -45,7 +45,7 @@ const SocialMediaMarketing = () => {
         </div>
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <p className="text-sm text-gray-500">Monthly Budget</p>
-          <h3 className="text-2xl font-bold text-[#1F2937] mt-1">$18,000</h3>
+          <h3 className="text-2xl font-bold text-[#1F2937] mt-1">₹14,94,000</h3>
         </div>
       </div>
 

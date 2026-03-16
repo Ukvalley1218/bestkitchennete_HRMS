@@ -1,4 +1,4 @@
-import { Megaphone, Users, TrendingUp, DollarSign } from "lucide-react";
+import { Megaphone, Users, TrendingUp, IndianRupee } from "lucide-react";
 import {
   StatCard,
   LeadGenerationChart,
@@ -36,7 +36,7 @@ const MarketingDashboard = () => {
       id: 4,
       label: "Marketing ROI",
       value: "385%",
-      icon: DollarSign,
+      icon: IndianRupee,
       trend: "+15",
       sub: "vs last month",
     },
