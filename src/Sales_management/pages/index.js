@@ -4,6 +4,7 @@ import SalesPipeline from "./SalesPipeline";
 import Quotations from "./Quotations";
 import SalesReport from "./SalesReport";
 import Settings from "./Settings";
+import PrePlanningChecklist from "./PrePlanningChecklist";
 
 export {
   SalesDashboard,
@@ -12,4 +13,5 @@ export {
   Quotations,
   SalesReport,
   Settings,
+  PrePlanningChecklist,
 };

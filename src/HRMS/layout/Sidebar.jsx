@@ -87,6 +87,7 @@ const menuItems = [
       { name: "Lead Management", path: "/sales/leads" },
       { name: "Sales Pipeline", path: "/sales/pipeline" },
       { name: "Quotations", path: "/sales/quotations" },
+      { name: "Pre-Planning Checklist", path: "/sales/pre-planning" },
       { name: "Sales Report", path: "/sales/report" },
     ],
   },

@@ -30,6 +30,7 @@ import {
   SalesPipeline,
   Quotations,
   SalesReport,
+  PrePlanningChecklist,
 } from "../Sales_management/pages";
 
 function App() {
@@ -71,6 +72,7 @@ function App() {
           <Route path="/sales/leads" element={<LeadManagement />} />
           <Route path="/sales/pipeline" element={<SalesPipeline />} />
           <Route path="/sales/quotations" element={<Quotations />} />
+          <Route path="/sales/pre-planning" element={<PrePlanningChecklist />} />
           <Route path="/sales/report" element={<SalesReport />} />
 
           {/* Default redirect */}

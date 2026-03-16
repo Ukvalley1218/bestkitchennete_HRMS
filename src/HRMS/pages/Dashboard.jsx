@@ -635,9 +635,6 @@ const infoCards = [
     sub: "Leaves & Expenses",
     iconBg: "text-yellow-600",
     text: "text-[#733E0A]",
-    border: "border-[#FFF085]", // manual text color
-
-    // valueBg: "bg-yellow-50",
     border: "border-yellow-100",
     bg: "bg-[#FEFCE8]",
   },

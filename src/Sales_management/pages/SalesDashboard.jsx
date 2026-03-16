@@ -21,21 +21,17 @@ import {
   CheckCircle,
   XCircle,
   Zap,
+  Calculator,
 } from "lucide-react";
 import { StatCard, QuotationCalculator } from "../components";
 import {
   BarChart,
   Bar,
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
 } from "recharts";
 
 // Dropdown Component
@@ -199,7 +195,8 @@ const SalesDashboard = () => {
   const [stageFilter, setStageFilter] = useState("all");
   const [showFloatingMenu, setShowFloatingMenu] = useState(false);
   const [showQuotationCalculator, setShowQuotationCalculator] = useState(false);
-  const [quotations, setQuotations] = useState([
+
+  const departments = [
     { id: "all", name: "All Departments" },
     { id: "sales", name: "Sales" },
     { id: "design", name: "Design" },
@@ -276,16 +273,6 @@ const SalesDashboard = () => {
     { name: 'May', sales: 6000, target: 5500 },
     { name: 'Jun', sales: 5500, target: 5000 },
     { name: 'Jul', sales: 7000, target: 6500 },
-  ];
-
-  // Lead Conversion Funnel Data
-  const funnelData = [
-    { name: 'New Leads', value: 100, color: '#FF1E1E' },
-    { name: 'Contacted', value: 75, color: '#F59E0B' },
-    { name: 'Site Visit', value: 50, color: '#10B981' },
-    { name: 'Quotation', value: 30, color: '#3B82F6' },
-    { name: 'Negotiation', value: 20, color: '#8B5CF6' },
-    { name: 'Closed', value: 15, color: '#059669' },
   ];
 
   // Pipeline Data
@@ -389,7 +376,7 @@ const SalesDashboard = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="pt-8 space-y-6">
       {/* Header with Filters */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -449,46 +436,18 @@ const SalesDashboard = () => {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Monthly Sales Trend */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 lg:col-span-2">
-          <h3 className="text-lg font-semibold text-[#1F2937] mb-4">Monthly Sales vs Target</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={monthlySalesData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-              <XAxis dataKey="name" stroke="#6B7280" fontSize={12} />
-              <YAxis stroke="#6B7280" fontSize={12} />
-              <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '8px' }} />
-              <Bar dataKey="sales" fill="#FF1E1E" radius={[4, 4, 0, 0]} name="Sales" />
-              <Bar dataKey="target" fill="#E5E7EB" radius={[4, 4, 0, 0]} name="Target" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Lead Conversion Funnel */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-          <h3 className="text-lg font-semibold text-[#1F2937] mb-4">Lead Conversion</h3>
-          <div className="space-y-2">
-            {funnelData.map((item, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
-                <span className="text-sm text-gray-600 flex-1">{item.name}</span>
-                <span className="text-sm font-medium text-[#1F2937]">{item.value}%</span>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4">
-            <ResponsiveContainer width="100%" height={120}>
-              <PieChart>
-                <Pie data={funnelData} cx="50%" cy="50%" innerRadius={30} outerRadius={50} dataKey="value">
-                  {funnelData.map((entry, index) => (
-                    <Cell key={index} fill={entry.color} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+      <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+        <h3 className="text-lg font-semibold text-[#1F2937] mb-4">Monthly Sales vs Target</h3>
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart data={monthlySalesData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+            <XAxis dataKey="name" stroke="#6B7280" fontSize={12} />
+            <YAxis stroke="#6B7280" fontSize={12} />
+            <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '8px' }} />
+            <Bar dataKey="sales" fill="#FF1E1E" radius={[4, 4, 0, 0]} name="Sales" />
+            <Bar dataKey="target" fill="#E5E7EB" radius={[4, 4, 0, 0]} name="Target" />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
 
       {/* Critical Alerts Section */}
